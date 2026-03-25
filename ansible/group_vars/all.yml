@@ -1,10 +1,17 @@
 ---
 # Username with passwordless sudo on all cluster VMs.
-# This user and its SSH key are injected by cloud-init during Terraform provisioning.
-ansible_user: your_username
+# Must match var.vm_user in terraform/variables.tf (default: ansible).
+ansible_user: ansible
 
 # Python interpreter path (Rocky Linux 9.4 default)
 ansible_python_interpreter: /usr/bin/python3.9
+
+# Lustre version for Whamcloud package installation.
+lustre_version: "2.16.1"
+
+# Full kernel version string for the Whamcloud Lustre kernel.
+# Used for package installation and grubby default selection on server VMs.
+lustre_kernel_version: "5.14.0-427.31.1_lustre.el9.x86_64"
 
 # MGS LNET interface IPs — used by MDS/OSS/client nodes to register with the MGS.
 # These must match the ip_enp7/ip_enp8 values set for the mgs host in hosts.ini.

@@ -1,0 +1,118 @@
+---
+# Installs Whamcloud Lustre packages on all cluster nodes from a base Rocky 9.4
+# image. Must run before lnet_setup.yaml and server_stg_setup.yaml.
+#
+# Server VMs reboot automatically into the Lustre kernel at the end of Play 2.
+# If the reboot task times out, check the VM console via virt-manager or virsh
+# console <vm-name> to verify the VM came up. The default timeout is 600 seconds.
+
+- name: Configure e2fsprogs repository and install on all nodes
+  hosts: lustre_cluster
+  become: true
+  tasks:
+    - name: Configure Whamcloud e2fsprogs repository
+      ansible.builtin.yum_repository:
+        name: e2fsprogs-whamcloud
+        description: e2fsprogs for Lustre (Whamcloud)
+        baseurl: https://downloads.whamcloud.com/public/e2fsprogs/latest/el9/
+        enabled: true
+        gpgcheck: false
+        exclude: "*debuginfo*"
+
+    - name: Install Whamcloud e2fsprogs
+      ansible.builtin.dnf:
+        name: e2fsprogs
+        state: present
+
+
+- name: Install Lustre server packages and reboot into Lustre kernel
+  hosts: servers
+  become: true
+  tasks:
+    - name: Configure Whamcloud Lustre server repository
+      ansible.builtin.yum_repository:
+        name: lustre-server
+        description: "Lustre {{ lustre_version }} Server (Whamcloud)"
+        baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el9.4/server/RPMS/x86_64/"
+        enabled: true
+        gpgcheck: false
+        exclude: "*debuginfo*"
+
+    - name: Install Lustre server kernel packages
+      ansible.builtin.dnf:
+        name:
+          - "kernel-{{ lustre_kernel_version }}"
+          - "kernel-core-{{ lustre_kernel_version }}"
+          - "kernel-modules-{{ lustre_kernel_version }}"
+          - "kernel-modules-core-{{ lustre_kernel_version }}"
+          - "kernel-modules-extra-{{ lustre_kernel_version }}"
+          - "kernel-modules-internal-{{ lustre_kernel_version }}"
+        state: present
+
+    - name: Install Lustre server userspace and kmod packages
+      ansible.builtin.dnf:
+        name:
+          - "kmod-lustre-{{ lustre_version }}"
+          - "kmod-lustre-osd-ldiskfs-{{ lustre_version }}"
+          - "lustre-osd-ldiskfs-mount-{{ lustre_version }}"
+          - "lustre-{{ lustre_version }}"
+          - "lustre-iokit-{{ lustre_version }}"
+        state: present
+
+    - name: Check current default boot kernel
+      ansible.builtin.command: grubby --default-kernel
+      register: grubby_default
+      changed_when: false
+
+    - name: Set Lustre kernel as default boot entry
+      ansible.builtin.command: "grubby --set-default /boot/vmlinuz-{{ lustre_kernel_version }}"
+      when: "'lustre' not in grubby_default.stdout"
+
+    - name: Check running kernel
+      ansible.builtin.command: uname -r
+      register: running_kernel
+      changed_when: false
+
+    - name: Reboot into Lustre kernel
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+        post_reboot_delay: 30
+        msg: "Rebooting to load Lustre kernel {{ lustre_kernel_version }}"
+      when: "'lustre' not in running_kernel.stdout"
+
+
+- name: Install Lustre client and MPI packages
+  hosts: clients
+  become: true
+  tasks:
+    - name: Configure Whamcloud Lustre client repository
+      ansible.builtin.yum_repository:
+        name: lustre-client
+        description: "Lustre {{ lustre_version }} Client (Whamcloud)"
+        baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el9.4/client/RPMS/x86_64/"
+        enabled: true
+        gpgcheck: false
+        exclude: "*debuginfo*"
+
+    - name: Install Lustre client packages
+      ansible.builtin.dnf:
+        name:
+          - "kmod-lustre-{{ lustre_version }}"
+          - "kmod-lustre-client-{{ lustre_version }}"
+          - "lustre-client-{{ lustre_version }}"
+          - "lustre-iokit-{{ lustre_version }}"
+        state: present
+
+    - name: Install OpenMPI and IOR build dependencies
+      ansible.builtin.dnf:
+        name:
+          - openmpi
+          - openmpi-devel
+          - gcc
+          - make
+          - autoconf
+          - automake
+          - libtool
+        state: present
+
+...

@@ -1,7 +1,9 @@
 ---
+- name: Lustre RPM installation and server reboot
+  import_playbook: lustre_rpm_setup.yaml
+
 - name: Lustre network setup
   import_playbook: lnet_setup.yaml
-
 
 - name: Lustre storage setup
   import_playbook: server_stg_setup.yaml

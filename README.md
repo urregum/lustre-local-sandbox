@@ -60,8 +60,9 @@ Edit `ansible/hosts.ini` to set `ansible_host` for each node to its management
 IP (from Terraform output after provisioning). The LNET IPs (`ip_enp7`, `ip_enp8`)
 are pre-populated and match the Terraform network configuration.
 
-Edit `ansible/group_vars/all.yml` to set `ansible_user` to the sudo-capable user
-on your VMs (injected via cloud-init during Terraform provisioning).
+`ansible/group_vars/all.yml` sets `ansible_user: ansible` by default, which
+matches the Terraform `vm_user` default. If you override `vm_user` in
+`terraform.tfvars`, set `ansible_user` to the same value here.
 
 ---
 
