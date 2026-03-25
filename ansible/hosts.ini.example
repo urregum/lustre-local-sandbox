@@ -1,0 +1,38 @@
+# hosts.ini.example — copy to hosts.ini and populate ansible_host for each node.
+#
+# ansible_host: management IP assigned by Terraform (from `terraform output`).
+# ip_enp7 / ip_enp8: static LNET interface IPs on the lustre-lnet0/lnet1 networks.
+#   These are in the 192.168.100.0/16 range and are set by Ansible via nmcli.
+#   The values below match the Terraform network defaults; change only if you
+#   have overridden the LNET address scheme.
+#
+# Copy this file to hosts.ini and set each ansible_host before running any plays.
+
+[mgmt_servers]
+mgs ansible_host=<mgmt-ip> ip_enp7=192.168.100.9/16 ip_enp8=192.168.100.10/16 fslabel="MGS" mntpath="mgs"
+
+[metadata_servers]
+mds1 ansible_host=<mgmt-ip> ip_enp7=192.168.100.11/16 ip_enp8=192.168.100.12/16 mdt_index=0 fslabel="lustrefs-MDT0000" mntpath="mdt"
+mds2 ansible_host=<mgmt-ip> ip_enp7=192.168.100.13/16 ip_enp8=192.168.100.14/16 mdt_index=1 fslabel="lustrefs-MDT0001" mntpath="mdt"
+
+[object_servers]
+oss1 ansible_host=<mgmt-ip> ip_enp7=192.168.100.15/16 ip_enp8=192.168.100.16/16 ost_index=0 fslabel="lustrefs-OST0000" mntpath="ost"
+oss2 ansible_host=<mgmt-ip> ip_enp7=192.168.100.17/16 ip_enp8=192.168.100.18/16 ost_index=1 fslabel="lustrefs-OST0001" mntpath="ost"
+oss3 ansible_host=<mgmt-ip> ip_enp7=192.168.100.19/16 ip_enp8=192.168.100.20/16 ost_index=2 fslabel="lustrefs-OST0002" mntpath="ost"
+oss4 ansible_host=<mgmt-ip> ip_enp7=192.168.100.21/16 ip_enp8=192.168.100.22/16 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
+
+[clients]
+client1 ansible_host=<mgmt-ip> ip_enp7=192.168.100.7/16 ip_enp8=192.168.100.8/16
+
+[servers:children]
+mgmt_servers
+metadata_servers
+object_servers
+
+[lustre_cluster:children]
+servers
+clients
+
+[lustre_cluster:vars]
+# ansible_user and mgs_enp*_ip are set in group_vars/all.yml
+# ansible_ssh_private_key_file=~/.ssh/id_ed25519

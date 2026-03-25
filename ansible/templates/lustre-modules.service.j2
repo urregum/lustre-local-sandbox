@@ -1,0 +1,16 @@
+[Unit]
+Description=Load Lustre Modules Safely
+After=network-online.target
+Wants=network-online.target
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 5
+ExecStart=/sbin/modprobe lnet
+ExecStart=/sbin/modprobe lustre
+RemainAfterExit=yes
+TimeoutSec=60
+
+[Install]
+WantedBy=multi-user.target

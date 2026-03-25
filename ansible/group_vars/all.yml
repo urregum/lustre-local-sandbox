@@ -1,0 +1,12 @@
+---
+# Username with passwordless sudo on all cluster VMs.
+# This user and its SSH key are injected by cloud-init during Terraform provisioning.
+ansible_user: your_username
+
+# Python interpreter path (Rocky Linux 9.4 default)
+ansible_python_interpreter: /usr/bin/python3.9
+
+# MGS LNET interface IPs — used by MDS/OSS/client nodes to register with the MGS.
+# These must match the ip_enp7/ip_enp8 values set for the mgs host in hosts.ini.
+mgs_enp7_ip: "192.168.100.9"
+mgs_enp8_ip: "192.168.100.10"

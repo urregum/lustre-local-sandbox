@@ -1,0 +1,9 @@
+---
+- name: Lustre network setup
+  import_playbook: lnet_setup.yaml
+
+
+- name: Lustre storage setup
+  import_playbook: server_stg_setup.yaml
+
+...

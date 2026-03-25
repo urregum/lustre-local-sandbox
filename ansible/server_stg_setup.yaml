@@ -1,0 +1,156 @@
+---
+# There's a lot of repeated content in the below, but this serializes order of
+# Mgs -> metadata -> object setup
+#
+- name: Lustre Mgmt Storage Setup
+  hosts: mgmt_servers
+  become: true  # Runs commands with sudo
+  tasks:
+    - name: Format Lustre Management Server (MGS) and Metadata Target (MDT)
+      command: >
+        mkfs.lustre --fsname=lustrefs
+        --mgs
+        --mgsnode={{
+          ip_enp7.split('/')[0] ~ '@tcp,' ~
+          ip_enp8.split('/')[0] ~ '@tcp'
+        }}
+        /dev/vdb
+      args:
+        creates: /etc/lustre_vdb_formatted  # use canary file as simple detector
+      register: format_result
+
+    - name: Mark device as formatted
+      file:
+        path: /etc/lustre_vdb_formatted
+        state: touch
+      when: format_result.changed
+
+    - name: Ensure Lustre mgmt mount point exists
+      file:
+        path: "/mnt/{{ mntpath }}"
+        state: directory
+        mode: '0755'
+
+    - name: Force kernel to reread partition table
+      command: partprobe /dev/vdb
+
+    - name: Wait for udev to settle
+      command: udevadm settle
+
+    - name: Mount Lustre mgmt filesystem
+      mount:
+        path: "/mnt/{{ mntpath }}"
+        src: "/dev/vdb"
+        fstype: lustre
+        opts: "_netdev,noauto"
+        state: mounted
+
+
+- name: Lustre Metadata Storage Setup
+  hosts: metadata_servers
+  become: true
+  tasks:
+    - name: Format Lustre Metadata Servers (MDS) and Metadata Targets (MDT)
+      command: >
+        mkfs.lustre --fsname=lustrefs
+        --mdt
+        --mgsnode={{
+          mgs_enp7_ip ~ '@tcp,' ~
+          mgs_enp8_ip ~ '@tcp'
+        }}
+        --index={{ mdt_index }}
+        /dev/vdb
+      args:
+        creates: /etc/lustre_vdb_formatted
+      register: format_result
+
+    - name: Mark device as formatted
+      file:
+        path: /etc/lustre_vdb_formatted
+        state: touch
+      when: format_result.changed
+
+    - name: Ensure Lustre metadata mount point exists
+      file:
+        path: "/mnt/{{ mntpath }}"
+        state: directory
+        mode: '0755'
+
+    - name: Force kernel to reread partition table
+      command: partprobe /dev/vdb
+
+    - name: Wait for udev to settle
+      command: udevadm settle
+
+    - name: Mount Lustre metadata filesystem
+      mount:
+        path: "/mnt/{{ mntpath }}"
+        src: "/dev/vdb"
+        fstype: lustre
+        opts: "_netdev,noauto"
+        state: mounted
+
+- name: Lustre Object Storage Setup
+  hosts: object_servers
+  become: true
+  tasks:
+    - name: Fmt Lustre Object Storage Server (OSS) + Object Storage Target (OST)
+      command: >
+        mkfs.lustre --reformat --fsname=lustrefs
+        --ost
+        --mgsnode={{
+          mgs_enp7_ip ~ '@tcp,' ~
+          mgs_enp8_ip ~ '@tcp'
+        }}
+        --index={{ ost_index }}
+        /dev/vdb
+      args:
+        creates: /etc/lustre_vdb_formatted
+      register: format_result
+
+    - name: Mark device as formatted
+      file:
+        path: /etc/lustre_vdb_formatted
+        state: touch
+      when: format_result.changed
+
+    - name: Ensure Lustre data mount point exists
+      file:
+        path: "/mnt/{{ mntpath }}"
+        state: directory
+        mode: '0755'
+
+    - name: Force kernel to reread partition table
+      command: partprobe /dev/vdb
+
+    - name: Wait for udev to settle
+      command: udevadm settle
+
+    - name: Mount Lustre data filesystem
+      mount:
+        path: "/mnt/{{ mntpath }}"
+        src: "/dev/vdb"
+        fstype: lustre
+        opts: "_netdev,noauto"
+        state: mounted
+
+- name: Health Checks
+  hosts: servers 
+  become: true
+  tasks:
+    - name: Verify all Lustre devices are UP
+      shell: lctl dl
+      register: lctl_output
+      changed_when: false
+      # Fail if there are any devices found, but NOT all are 'UP'
+      failed_when: >
+        lctl_output.stdout_lines | length > 0 and 
+        lctl_output.stdout_lines | reject('search', ' UP ') | list | length > 0
+
+    - name: Check Lustre kernel health
+      command: lctl get_param -n health_check
+      register: health_result
+      changed_when: false
+      failed_when: "'healthy' not in health_result.stdout"
+
+...

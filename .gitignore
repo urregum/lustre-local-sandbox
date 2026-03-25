@@ -1,0 +1,19 @@
+# Ansible
+ansible/hosts.ini
+
+# Python
+.venv/
+venv/
+*.pyc
+__pycache__/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Editor
+.vscode/
+*.swp
+*~
