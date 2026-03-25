@@ -10,3 +10,9 @@ ansible_python_interpreter: /usr/bin/python3.9
 # These must match the ip_enp7/ip_enp8 values set for the mgs host in hosts.ini.
 mgs_enp7_ip: "192.168.100.9"
 mgs_enp8_ip: "192.168.100.10"
+
+# LNET interface names on Terraform-provisioned VMs.
+# KVM virtio NIC PCI order: enp1s0 = management, enp2s0 = lnet0, enp3s0 = lnet1.
+# Override here if your environment assigns different names.
+lnet_iface_0: enp2s0
+lnet_iface_1: enp3s0

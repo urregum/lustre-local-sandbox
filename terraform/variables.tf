@@ -92,6 +92,42 @@ variable "client" {
   }
 }
 
+variable "mgmt_ips" {
+  description = "Static management IP assignments for each cluster VM (within mgmt_network_cidr)"
+  type = object({
+    mgs     = string
+    mds1    = string
+    mds2    = string
+    oss1    = string
+    oss2    = string
+    oss3    = string
+    oss4    = string
+    client1 = string
+  })
+  default = {
+    mgs     = "10.0.100.10"
+    mds1    = "10.0.100.11"
+    mds2    = "10.0.100.12"
+    oss1    = "10.0.100.13"
+    oss2    = "10.0.100.14"
+    oss3    = "10.0.100.15"
+    oss4    = "10.0.100.16"
+    client1 = "10.0.100.20"
+  }
+}
+
+variable "mgmt_prefix" {
+  description = "Prefix length for the management network (must match mgmt_network_cidr)"
+  type        = number
+  default     = 24
+}
+
+variable "mgmt_gateway" {
+  description = "Default gateway for the management NAT network"
+  type        = string
+  default     = "10.0.100.1"
+}
+
 variable "ssh_public_key_path" {
   description = "Path to the SSH public key to inject into VMs via cloud-init"
   type        = string

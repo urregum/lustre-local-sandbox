@@ -9,20 +9,20 @@
 # Copy this file to hosts.ini and set each ansible_host before running any plays.
 
 [mgmt_servers]
-mgs ansible_host=<mgmt-ip> ip_enp7=192.168.100.9/16 ip_enp8=192.168.100.10/16 fslabel="MGS" mntpath="mgs"
+mgs ansible_host=10.0.100.10 ip_enp7=192.168.100.9/16 ip_enp8=192.168.100.10/16 fslabel="MGS" mntpath="mgs"
 
 [metadata_servers]
-mds1 ansible_host=<mgmt-ip> ip_enp7=192.168.100.11/16 ip_enp8=192.168.100.12/16 mdt_index=0 fslabel="lustrefs-MDT0000" mntpath="mdt"
-mds2 ansible_host=<mgmt-ip> ip_enp7=192.168.100.13/16 ip_enp8=192.168.100.14/16 mdt_index=1 fslabel="lustrefs-MDT0001" mntpath="mdt"
+mds1 ansible_host=10.0.100.11 ip_enp7=192.168.100.11/16 ip_enp8=192.168.100.12/16 mdt_index=0 fslabel="lustrefs-MDT0000" mntpath="mdt"
+mds2 ansible_host=10.0.100.12 ip_enp7=192.168.100.13/16 ip_enp8=192.168.100.14/16 mdt_index=1 fslabel="lustrefs-MDT0001" mntpath="mdt"
 
 [object_servers]
-oss1 ansible_host=<mgmt-ip> ip_enp7=192.168.100.15/16 ip_enp8=192.168.100.16/16 ost_index=0 fslabel="lustrefs-OST0000" mntpath="ost"
-oss2 ansible_host=<mgmt-ip> ip_enp7=192.168.100.17/16 ip_enp8=192.168.100.18/16 ost_index=1 fslabel="lustrefs-OST0001" mntpath="ost"
-oss3 ansible_host=<mgmt-ip> ip_enp7=192.168.100.19/16 ip_enp8=192.168.100.20/16 ost_index=2 fslabel="lustrefs-OST0002" mntpath="ost"
-oss4 ansible_host=<mgmt-ip> ip_enp7=192.168.100.21/16 ip_enp8=192.168.100.22/16 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
+oss1 ansible_host=10.0.100.13 ip_enp7=192.168.100.15/16 ip_enp8=192.168.100.16/16 ost_index=0 fslabel="lustrefs-OST0000" mntpath="ost"
+oss2 ansible_host=10.0.100.14 ip_enp7=192.168.100.17/16 ip_enp8=192.168.100.18/16 ost_index=1 fslabel="lustrefs-OST0001" mntpath="ost"
+oss3 ansible_host=10.0.100.15 ip_enp7=192.168.100.19/16 ip_enp8=192.168.100.20/16 ost_index=2 fslabel="lustrefs-OST0002" mntpath="ost"
+oss4 ansible_host=10.0.100.16 ip_enp7=192.168.100.21/16 ip_enp8=192.168.100.22/16 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
 
 [clients]
-client1 ansible_host=<mgmt-ip> ip_enp7=192.168.100.7/16 ip_enp8=192.168.100.8/16
+client1 ansible_host=10.0.100.20 ip_enp7=192.168.100.7/16 ip_enp8=192.168.100.8/16
 
 [servers:children]
 mgmt_servers

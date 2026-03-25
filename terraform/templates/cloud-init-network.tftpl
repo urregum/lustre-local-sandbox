@@ -1,0 +1,12 @@
+version: 2
+ethernets:
+  enp1s0:
+    addresses:
+      - ${mgmt_ip}/${mgmt_prefix}
+    routes:
+      - to: default
+        via: ${mgmt_gateway}
+    nameservers:
+      addresses:
+        - 8.8.8.8
+        - 8.8.4.4

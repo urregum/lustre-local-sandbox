@@ -6,7 +6,7 @@
     - name: Setup lnet conf file
       ansible.builtin.copy:
         dest: /etc/modprobe.d/lnet.conf
-        content: "options lnet networks=tcp0(enp7s0,enp8s0)\n"
+        content: "options lnet networks=tcp0({{ lnet_iface_0 }},{{ lnet_iface_1 }})\n"
         owner: root
         group: root
         mode: '0644'
@@ -21,8 +21,8 @@
         state: present
         autoconnect: true
       loop:
-        - {conn: "lustre-net0", iface: "enp7s0", ip: "{{ ip_enp7 }}"}
-        - {conn: "lustre-net1", iface: "enp8s0", ip: "{{ ip_enp8 }}"}
+        - {conn: "lustre-net0", iface: "{{ lnet_iface_0 }}", ip: "{{ ip_enp7 }}"}
+        - {conn: "lustre-net1", iface: "{{ lnet_iface_1 }}", ip: "{{ ip_enp8 }}"}
       register: nm_output
 
     - name: Bring up connections if changed
@@ -61,8 +61,8 @@
     - name: Add LNET interfaces if missing
       ansible.builtin.command: "lnetctl net add --net tcp --if {{ item }}"
       loop:
-        - "enp7s0"
-        - "enp8s0"
+        - "{{ lnet_iface_0 }}"
+        - "{{ lnet_iface_1 }}"
       # Only run if the interface isn't already in the 'net show' output
       when: item not in lnet_show.stdout
 

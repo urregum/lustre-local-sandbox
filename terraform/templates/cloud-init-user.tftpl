@@ -1,0 +1,29 @@
+#cloud-config
+hostname: ${hostname}
+fqdn: ${hostname}.lustre.local
+manage_etc_hosts: false
+
+users:
+  - name: ${vm_user}
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: wheel
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+write_files:
+  - path: /etc/hosts
+    owner: root:root
+    permissions: '0644'
+    content: |
+      127.0.0.1   localhost localhost.localdomain
+      ::1         localhost localhost.localdomain
+      ${mgmt_ips.mgs}     mgs
+      ${mgmt_ips.mds1}    mds1
+      ${mgmt_ips.mds2}    mds2
+      ${mgmt_ips.oss1}    oss1
+      ${mgmt_ips.oss2}    oss2
+      ${mgmt_ips.oss3}    oss3
+      ${mgmt_ips.oss4}    oss4
+      ${mgmt_ips.client1} client1
