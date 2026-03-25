@@ -7,15 +7,7 @@ what the issue is, why it was deferred, and what the intended fix is.
 
 ## Ansible Plays
 
-### Canary file idempotency pattern
-**Files:** `ansible/server_stg_setup.yaml`
-**Issue:** `mkfs.lustre` idempotency is currently gated on the existence of
-`/etc/lustre_vdb_formatted` rather than actual device state.
-**Intended fix:** Replace with `blkid /dev/vdb` detection — skip `mkfs.lustre`
-if a Lustre superblock is already present. This survives VM reboots cleanly and
-is reset naturally by L2 teardown (`wipefs -a`). Also remove `--reformat` from
-OSS plays; the detection gate makes it redundant.
-**Deferred until:** Ansible refactor pass (post initial environment stabilization).
+### ~~Canary file idempotency pattern~~ — resolved in ac8a7ba
 
 ### Bare `shell:` tasks
 **Files:** `ansible/lnet_setup.yaml`
