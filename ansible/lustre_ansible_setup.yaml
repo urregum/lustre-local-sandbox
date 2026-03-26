@@ -8,4 +8,7 @@
 - name: Lustre storage setup
   import_playbook: server_stg_setup.yaml
 
+- name: Lustre client mount and tooling setup
+  import_playbook: client_setup.yaml
+
 ...

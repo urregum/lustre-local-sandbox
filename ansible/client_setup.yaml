@@ -1,0 +1,72 @@
+---
+# Mounts the Lustre filesystem on client nodes, builds IOR from source,
+# and generates an MPI hosts file from the clients inventory group.
+#
+# Prerequisites: lustre_rpm_setup.yaml and lnet_setup.yaml must have run
+# successfully, and server_stg_setup.yaml must have completed so the MGS,
+# MDS, and OSS targets are mounted and healthy.
+
+- name: Mount Lustre filesystem and set up client tooling
+  hosts: clients
+  become: true
+  tasks:
+    - name: Ensure Lustre client mount point exists
+      ansible.builtin.file:
+        path: /mnt/lustre
+        state: directory
+        mode: '0755'
+
+    - name: Mount Lustre filesystem
+      ansible.builtin.mount:
+        path: /mnt/lustre
+        src: "{{ mgs_enp7_ip }}@tcp,{{ mgs_enp8_ip }}@tcp:/{{ lustre_fsname }}"
+        fstype: lustre
+        opts: "_netdev,noauto"
+        state: mounted
+
+    - name: Check if IOR is already installed
+      ansible.builtin.stat:
+        path: /usr/local/bin/ior
+      register: ior_binary
+
+    - name: Clone IOR source repository
+      ansible.builtin.git:
+        repo: https://github.com/hpc/ior.git
+        dest: /usr/local/src/ior
+      when: not ior_binary.stat.exists
+
+    - name: Bootstrap IOR build system
+      ansible.builtin.command:
+        cmd: ./bootstrap
+        chdir: /usr/local/src/ior
+      when: not ior_binary.stat.exists
+
+    - name: Configure IOR with OpenMPI compiler
+      ansible.builtin.command:
+        cmd: ./configure
+        chdir: /usr/local/src/ior
+      environment:
+        CC: /usr/lib64/openmpi/bin/mpicc
+      when: not ior_binary.stat.exists
+
+    - name: Build IOR
+      ansible.builtin.command:
+        cmd: make
+        chdir: /usr/local/src/ior
+      when: not ior_binary.stat.exists
+
+    - name: Install IOR
+      ansible.builtin.command:
+        cmd: make install
+        chdir: /usr/local/src/ior
+      when: not ior_binary.stat.exists
+
+    - name: Generate MPI hosts file from inventory
+      ansible.builtin.template:
+        src: templates/mpi-hostfile.j2
+        dest: "/home/{{ ansible_user }}/mpi_hostfile"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+...

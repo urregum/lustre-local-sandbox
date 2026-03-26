@@ -13,6 +13,13 @@ lustre_version: "2.16.1"
 # Used for package installation and grubby default selection on server VMs.
 lustre_kernel_version: "5.14.0-427.31.1_lustre.el9.x86_64"
 
+# Lustre filesystem name — must match --fsname used in mkfs.lustre on servers.
+lustre_fsname: "lustrefs"
+
+# MPI slots per client VM. Matches client vCPU count by default.
+# Override in host_vars if client VMs are resized independently.
+mpi_slots_per_client: 2
+
 # MGS LNET interface IPs — used by MDS/OSS/client nodes to register with the MGS.
 # These must match the ip_enp7/ip_enp8 values set for the mgs host in hosts.ini.
 mgs_enp7_ip: "192.168.100.9"

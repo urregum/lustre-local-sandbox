@@ -13,7 +13,7 @@
 
     - name: Format Lustre Management Server (MGS)
       command: >
-        mkfs.lustre --fsname=lustrefs
+        mkfs.lustre --fsname={{ lustre_fsname }}
         --mgs
         --mgsnode={{
           ip_enp7.split('/')[0] ~ '@tcp,' ~
@@ -55,7 +55,7 @@
 
     - name: Format Lustre Metadata Server (MDS)
       command: >
-        mkfs.lustre --fsname=lustrefs
+        mkfs.lustre --fsname={{ lustre_fsname }}
         --mdt
         --mgsnode={{
           mgs_enp7_ip ~ '@tcp,' ~
@@ -97,7 +97,7 @@
 
     - name: Format Lustre Object Storage Server (OSS)
       command: >
-        mkfs.lustre --fsname=lustrefs
+        mkfs.lustre --fsname={{ lustre_fsname }}
         --ost
         --mgsnode={{
           mgs_enp7_ip ~ '@tcp,' ~
