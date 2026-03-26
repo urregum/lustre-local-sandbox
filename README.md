@@ -44,20 +44,27 @@ pip install -r requirements.txt
 ansible-galaxy collection install community.general ansible.posix
 ```
 
-**4. Install pre-commit hooks**
+**4. Configure your inventory**
+
+`ansible/hosts.ini` is generated automatically from Terraform output after
+Phase 1 of the runbook — do not create or edit it by hand.
+
+If the default management network (`10.0.100.0/24`) conflicts with your host,
+copy `terraform/terraform.tfvars.example` to `terraform/terraform.tfvars` and
+override `mgmt_network_cidr`, `mgmt_gateway`, and `mgmt_ips` before running
+Terraform. See `terraform/terraform.tfvars.example` for all available overrides.
+
+---
+
+## Contributing
+
+Install pre-commit hooks after cloning:
 
 ```bash
 pre-commit install
 ```
 
-**5. Configure your inventory**
-
-`ansible/hosts.ini` is generated automatically from Terraform output after
-Phase 1 of the runbook — do not create or edit it by hand.
-
-`ansible/group_vars/all.yml` sets `ansible_user: ansible` by default, which
-matches the Terraform `vm_user` default. If you override `vm_user` in
-`terraform.tfvars`, set `ansible_user` to the same value here.
+Hooks run yamllint, black, and basic file checks on commit.
 
 ---
 

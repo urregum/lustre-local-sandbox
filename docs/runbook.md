@@ -16,7 +16,14 @@ sections are complete before proceeding:
 - Python venv activated with `requirements.txt` installed
 - `ansible-galaxy collection install community.general ansible.posix` completed
 - `ansible/group_vars/all.yml` `ansible_user` set to your VM username
-- Note: `ansible/hosts.ini` is generated automatically after Phase 1 — do not edit it by hand
+- `ansible/hosts.ini` is generated automatically after Phase 1 — do not create or edit it by hand
+
+If the default management network (`10.0.100.0/24`) conflicts with your host:
+
+```bash
+cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+# Edit terraform.tfvars: override mgmt_network_cidr, mgmt_gateway, and mgmt_ips
+```
 
 ---
 

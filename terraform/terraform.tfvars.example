@@ -1,0 +1,31 @@
+# terraform.tfvars.example — copy to terraform.tfvars and uncomment overrides as needed.
+# All variables have defaults in variables.tf. Only override what differs from your environment.
+#
+# terraform.tfvars is gitignored — do not commit it.
+
+# Override if the default storage pool path is not suitable on your host.
+# libvirt_pool_path = "/data/lustre-demo"
+
+# Override if you use a different SSH key type or path.
+# ssh_public_key_path = "~/.ssh/id_rsa.pub"
+
+# Override if you want a different VM username.
+# Must match ansible_user in ansible/group_vars/all.yml.
+# vm_user = "myuser"
+
+# Override if 10.0.100.0/24 conflicts with an existing network on your host.
+# All mgmt_ips values must fall within the chosen mgmt_network_cidr range.
+#
+# mgmt_network_cidr = "10.0.100.0/24"
+# mgmt_gateway      = "10.0.100.1"
+#
+# mgmt_ips = {
+#   mgs     = "10.0.100.10"
+#   mds1    = "10.0.100.11"
+#   mds2    = "10.0.100.12"
+#   oss1    = "10.0.100.13"
+#   oss2    = "10.0.100.14"
+#   oss3    = "10.0.100.15"
+#   oss4    = "10.0.100.16"
+#   client1 = "10.0.100.20"
+# }
