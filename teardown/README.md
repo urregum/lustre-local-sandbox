@@ -32,7 +32,6 @@ parameters or recovering from a corrupt superblock). VMs remain running.
 **What it does:**
 - Everything in L1
 - Runs `wipefs -a /dev/vdb` on all server nodes, clearing the Lustre superblock
-- Removes canary files (if not yet refactored to `blkid`-based detection)
 
 After L2, re-running the Ansible storage setup play will reformat and remount cleanly.
 

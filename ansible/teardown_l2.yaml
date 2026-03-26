@@ -1,0 +1,19 @@
+---
+# Block device reset: runs L1 teardown then wipes Lustre superblocks from all
+# server data disks. After L2, re-running server_stg_setup.yaml will reformat
+# and remount cleanly.
+#
+# WARNING: Lustre filesystem data will be permanently destroyed.
+
+- name: Graceful cluster shutdown (L1)
+  import_playbook: teardown_l1.yaml
+
+- name: Wipe Lustre superblocks from server data disks
+  hosts: servers
+  become: true
+  tasks:
+    - name: Wipe filesystem signatures from data disk
+      ansible.builtin.command: "wipefs -a {{ lustre_data_device }}"
+      changed_when: true
+
+...

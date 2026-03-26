@@ -1,0 +1,97 @@
+---
+# Graceful cluster shutdown: unmounts filesystems in safe order
+# (clients -> OSS -> MDS -> MGS), then stops the lustre-modules service
+# and unloads Lustre and LNet kernel modules on all nodes.
+#
+# VMs remain running. Re-running the Ansible setup plays restores the cluster.
+
+- name: Unmount Lustre client filesystem
+  hosts: clients
+  become: true
+  tasks:
+    - name: Check if Lustre client filesystem is mounted
+      ansible.builtin.command: mountpoint -q /mnt/lustre
+      register: mount_check
+      changed_when: false
+      failed_when: false
+
+    - name: Unmount Lustre client filesystem
+      ansible.builtin.command: umount /mnt/lustre
+      when: mount_check.rc == 0
+
+- name: Unmount Lustre object storage
+  hosts: object_servers
+  become: true
+  tasks:
+    - name: Check if OST filesystem is mounted
+      ansible.builtin.command: "mountpoint -q /mnt/{{ mntpath }}"
+      register: mount_check
+      changed_when: false
+      failed_when: false
+
+    - name: Unmount OST filesystem
+      ansible.builtin.command: "umount /mnt/{{ mntpath }}"
+      when: mount_check.rc == 0
+
+- name: Unmount Lustre metadata storage
+  hosts: metadata_servers
+  become: true
+  tasks:
+    - name: Check if MDT filesystem is mounted
+      ansible.builtin.command: "mountpoint -q /mnt/{{ mntpath }}"
+      register: mount_check
+      changed_when: false
+      failed_when: false
+
+    - name: Unmount MDT filesystem
+      ansible.builtin.command: "umount /mnt/{{ mntpath }}"
+      when: mount_check.rc == 0
+
+- name: Unmount Lustre management storage
+  hosts: mgmt_servers
+  become: true
+  tasks:
+    - name: Check if MGS filesystem is mounted
+      ansible.builtin.command: "mountpoint -q /mnt/{{ mntpath }}"
+      register: mount_check
+      changed_when: false
+      failed_when: false
+
+    - name: Unmount MGS filesystem
+      ansible.builtin.command: "umount /mnt/{{ mntpath }}"
+      when: mount_check.rc == 0
+
+- name: Stop lustre-modules service and unload kernel modules
+  hosts: lustre_cluster
+  become: true
+  tasks:
+    - name: Stop lustre-modules service
+      ansible.builtin.systemd:
+        name: lustre-modules
+        state: stopped
+
+    - name: Check if lustre module is loaded
+      ansible.builtin.shell: lsmod | grep -q "^lustre"
+      register: lustre_loaded
+      changed_when: false
+      failed_when: false
+
+    - name: Unload lustre kernel module
+      community.general.modprobe:
+        name: lustre
+        state: absent
+      when: lustre_loaded.rc == 0
+
+    - name: Check if lnet module is loaded
+      ansible.builtin.shell: lsmod | grep -q "^lnet"
+      register: lnet_loaded
+      changed_when: false
+      failed_when: false
+
+    - name: Unload lnet kernel module
+      community.general.modprobe:
+        name: lnet
+        state: absent
+      when: lnet_loaded.rc == 0
+
+...
