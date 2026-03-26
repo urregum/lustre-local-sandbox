@@ -3,6 +3,7 @@ ansible/hosts.ini
 
 # Python
 .venv/
+.venv-ci/
 venv/
 *.pyc
 __pycache__/

@@ -36,8 +36,11 @@ remove the deferred comment.
 Runs ansible-lint, yamllint, and `black --check` on GitHub-hosted runners.
 
 ### Integration testing
-**Status:** Deferred — approach TBD. Demo requires local KVM host; cloud runner
-and containerized runner are both out of scope. Further planning needed.
+**Status:** Scaffolded — `tests/integration/ci_run.sh` + static KVM inventory.
+Runs L2 teardown → full provision unattended against local KVM VMs.
+`make integration` / `make integration-noclean` (skip teardown).
+Verify `ansible_host` IPs in `tests/integration/inventory/hosts.ini` match
+actual libvirt DHCP leases before first run (`virsh net-dhcp-leases default`).
 
 ---
 
