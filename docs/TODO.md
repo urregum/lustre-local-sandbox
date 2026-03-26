@@ -26,13 +26,27 @@ write under a `when:` guard and correctly reports changed when it runs.
 ## CI / Toolchain
 
 ### ansible-lint pre-commit hook
-**Issue:** ansible-lint not yet in `.pre-commit-config.yaml`.
-**Intended fix:** Add after Ansible plays are refactored to a clean lint baseline.
+**Status:** Unblocked — Ansible refactor complete, clean lint baseline established.
+**Intended fix:** Add `ansible-lint` stanza to `.pre-commit-config.yaml` and
+remove the deferred comment.
 
-### GitHub Actions
-**Issue:** No CI pipeline exists yet.
-**Intended fix:** Add after pre-commit configuration is stable. Will require a
-self-hosted runner for integration tests against the live cluster.
+### GitHub Actions — lint workflow
+**Status:** Unblocked — no runner or cluster required.
+**Intended fix:** Add `.github/workflows/lint.yml` triggered on push to main.
+Runs ansible-lint, yamllint, and `black --check` on GitHub-hosted runners.
+
+### Integration testing
+**Status:** Deferred — approach TBD. Demo requires local KVM host; cloud runner
+and containerized runner are both out of scope. Further planning needed.
+
+---
+
+## Repository workflow
+
+### Branching and PR workflow
+**Status:** Deferred to 1.0.
+**Intended fix:** Enable main branch protection and require PRs for all merges
+at 1.0. Direct push to main is acceptable for now.
 
 ---
 
