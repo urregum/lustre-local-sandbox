@@ -21,8 +21,8 @@
         state: present
         autoconnect: true
       loop:
-        - {conn: "lustre-net0", iface: "{{ lnet_iface_0 }}", ip: "{{ ip_enp7 }}"}
-        - {conn: "lustre-net1", iface: "{{ lnet_iface_1 }}", ip: "{{ ip_enp8 }}"}
+        - {conn: "lustre-net0", iface: "{{ lnet_iface_0 }}", ip: "{{ ip_lnet0 }}"}
+        - {conn: "lustre-net1", iface: "{{ lnet_iface_1 }}", ip: "{{ ip_lnet1 }}"}
       register: nm_output
 
     - name: Bring up connections if changed
@@ -31,7 +31,7 @@
       when: item.changed
 
     - name: Check if lnet is loaded
-      shell: lsmod | grep -q "^lnet"
+      ansible.builtin.shell: lsmod | grep -q "^lnet"
       register: lnet_loaded
       failed_when: false
       changed_when: false
@@ -44,7 +44,7 @@
 
     - name: Check if LNet is already configured
       # 'lnetctl net show' returns only the loopback (lo) if unconfigured
-      shell: lctl list_nids | grep -v "0@lo"
+      ansible.builtin.shell: lctl list_nids | grep -v "0@lo"
       register: lnet_check
       failed_when: false
       changed_when: false
@@ -76,7 +76,7 @@
         - "lustre-net1"
 
     - name: Create Lustre modules systemd service
-      template:
+      ansible.builtin.template:
         src: lustre-modules.service.j2
         dest: /etc/systemd/system/lustre-modules.service
         owner: root
@@ -85,24 +85,24 @@
       notify: reload systemd
 
     - name: Ensure lustre-modules service is enabled
-      systemd:
+      ansible.builtin.systemd:
         name: lustre-modules
         enabled: true
         state: started  # Runs the modprobes immediately if not already loaded
 
     - name: Ping MGS from all nodes, lnet0
-      command: "lctl ping {{ mgs_enp7_ip }}@tcp"
+      ansible.builtin.command: "lctl ping {{ mgs_lnet0_ip }}@tcp"
       register: ping_result
       changed_when: false
 
     - name: Ping MGS from all nodes, lnet1
-      command: "lctl ping {{ mgs_enp8_ip }}@tcp"
+      ansible.builtin.command: "lctl ping {{ mgs_lnet1_ip }}@tcp"
       register: ping_result
       changed_when: false
 
   handlers:
     - name: reload systemd
-      systemd:
+      ansible.builtin.systemd:
         daemon_reload: true
 
 #    - name: Verify connection (Ping)

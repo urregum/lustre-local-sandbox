@@ -17,9 +17,9 @@
         mode: '0755'
 
     - name: Mount Lustre filesystem
-      ansible.builtin.mount:
+      ansible.posix.mount:
         path: /mnt/lustre
-        src: "{{ mgs_enp7_ip }}@tcp,{{ mgs_enp8_ip }}@tcp:/{{ lustre_fsname }}"
+        src: "{{ mgs_lnet0_ip }}@tcp,{{ mgs_lnet1_ip }}@tcp:/{{ lustre_fsname }}"
         fstype: lustre
         opts: "_netdev,noauto"
         state: mounted

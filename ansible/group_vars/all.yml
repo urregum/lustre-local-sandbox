@@ -21,9 +21,9 @@ lustre_fsname: "lustrefs"
 mpi_slots_per_client: 2
 
 # MGS LNET interface IPs — used by MDS/OSS/client nodes to register with the MGS.
-# These must match the ip_enp7/ip_enp8 values set for the mgs host in hosts.ini.
-mgs_enp7_ip: "192.168.100.9"
-mgs_enp8_ip: "192.168.100.10"
+# These must match the ip_lnet0/ip_lnet1 values set for the mgs host in hosts.ini.
+mgs_lnet0_ip: "192.168.100.9"
+mgs_lnet1_ip: "192.168.100.10"
 
 # Data disk device on all server VMs (boot=vda, data=vdb per Terraform disk order).
 lustre_data_device: /dev/vdb

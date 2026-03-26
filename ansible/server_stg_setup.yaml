@@ -6,36 +6,38 @@
   become: true
   tasks:
     - name: Check if {{ lustre_data_device }} has a Lustre filesystem
-      command: blkid -s TYPE -o value {{ lustre_data_device }}
+      ansible.builtin.command: blkid -s TYPE -o value {{ lustre_data_device }}
       register: blkid_result
       changed_when: false
       failed_when: false
 
     - name: Format Lustre Management Server (MGS)
-      command: >
+      ansible.builtin.command: >
         mkfs.lustre --fsname={{ lustre_fsname }}
         --mgs
         --mgsnode={{
-          ip_enp7.split('/')[0] ~ '@tcp,' ~
-          ip_enp8.split('/')[0] ~ '@tcp'
+          ip_lnet0.split('/')[0] ~ '@tcp,' ~
+          ip_lnet1.split('/')[0] ~ '@tcp'
         }}
         {{ lustre_data_device }}
       when: blkid_result.stdout != "lustre"
 
     - name: Ensure Lustre mgmt mount point exists
-      file:
+      ansible.builtin.file:
         path: "/mnt/{{ mntpath }}"
         state: directory
         mode: '0755'
 
     - name: Force kernel to reread partition table
-      command: partprobe {{ lustre_data_device }}
+      ansible.builtin.command: partprobe {{ lustre_data_device }}
+      changed_when: false
 
     - name: Wait for udev to settle
-      command: udevadm settle
+      ansible.builtin.command: udevadm settle
+      changed_when: false
 
     - name: Mount Lustre mgmt filesystem
-      mount:
+      ansible.posix.mount:
         path: "/mnt/{{ mntpath }}"
         src: "{{ lustre_data_device }}"
         fstype: lustre
@@ -48,37 +50,39 @@
   become: true
   tasks:
     - name: Check if {{ lustre_data_device }} has a Lustre filesystem
-      command: blkid -s TYPE -o value {{ lustre_data_device }}
+      ansible.builtin.command: blkid -s TYPE -o value {{ lustre_data_device }}
       register: blkid_result
       changed_when: false
       failed_when: false
 
     - name: Format Lustre Metadata Server (MDS)
-      command: >
+      ansible.builtin.command: >
         mkfs.lustre --fsname={{ lustre_fsname }}
         --mdt
         --mgsnode={{
-          mgs_enp7_ip ~ '@tcp,' ~
-          mgs_enp8_ip ~ '@tcp'
+          mgs_lnet0_ip ~ '@tcp,' ~
+          mgs_lnet1_ip ~ '@tcp'
         }}
         --index={{ mdt_index }}
         {{ lustre_data_device }}
       when: blkid_result.stdout != "lustre"
 
     - name: Ensure Lustre metadata mount point exists
-      file:
+      ansible.builtin.file:
         path: "/mnt/{{ mntpath }}"
         state: directory
         mode: '0755'
 
     - name: Force kernel to reread partition table
-      command: partprobe {{ lustre_data_device }}
+      ansible.builtin.command: partprobe {{ lustre_data_device }}
+      changed_when: false
 
     - name: Wait for udev to settle
-      command: udevadm settle
+      ansible.builtin.command: udevadm settle
+      changed_when: false
 
     - name: Mount Lustre metadata filesystem
-      mount:
+      ansible.posix.mount:
         path: "/mnt/{{ mntpath }}"
         src: "{{ lustre_data_device }}"
         fstype: lustre
@@ -90,37 +94,39 @@
   become: true
   tasks:
     - name: Check if {{ lustre_data_device }} has a Lustre filesystem
-      command: blkid -s TYPE -o value {{ lustre_data_device }}
+      ansible.builtin.command: blkid -s TYPE -o value {{ lustre_data_device }}
       register: blkid_result
       changed_when: false
       failed_when: false
 
     - name: Format Lustre Object Storage Server (OSS)
-      command: >
+      ansible.builtin.command: >
         mkfs.lustre --fsname={{ lustre_fsname }}
         --ost
         --mgsnode={{
-          mgs_enp7_ip ~ '@tcp,' ~
-          mgs_enp8_ip ~ '@tcp'
+          mgs_lnet0_ip ~ '@tcp,' ~
+          mgs_lnet1_ip ~ '@tcp'
         }}
         --index={{ ost_index }}
         {{ lustre_data_device }}
       when: blkid_result.stdout != "lustre"
 
     - name: Ensure Lustre data mount point exists
-      file:
+      ansible.builtin.file:
         path: "/mnt/{{ mntpath }}"
         state: directory
         mode: '0755'
 
     - name: Force kernel to reread partition table
-      command: partprobe {{ lustre_data_device }}
+      ansible.builtin.command: partprobe {{ lustre_data_device }}
+      changed_when: false
 
     - name: Wait for udev to settle
-      command: udevadm settle
+      ansible.builtin.command: udevadm settle
+      changed_when: false
 
     - name: Mount Lustre data filesystem
-      mount:
+      ansible.posix.mount:
         path: "/mnt/{{ mntpath }}"
         src: "{{ lustre_data_device }}"
         fstype: lustre
@@ -132,7 +138,7 @@
   become: true
   tasks:
     - name: Verify all Lustre devices are UP
-      shell: lctl dl
+      ansible.builtin.command: lctl dl
       register: lctl_output
       changed_when: false
       # Fail if there are any devices found, but NOT all are 'UP'
@@ -141,7 +147,7 @@
         lctl_output.stdout_lines | reject('search', ' UP ') | list | length > 0
 
     - name: Check Lustre kernel health
-      command: lctl get_param -n health_check
+      ansible.builtin.command: lctl get_param -n health_check
       register: health_result
       changed_when: false
       failed_when: "'healthy' not in health_result.stdout"

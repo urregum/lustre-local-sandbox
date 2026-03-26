@@ -9,29 +9,15 @@ what the issue is, why it was deferred, and what the intended fix is.
 
 ### ~~Canary file idempotency pattern~~ — resolved in ac8a7ba
 
-### Bare `shell:` tasks
-**Files:** `ansible/lnet_setup.yaml`
-**Issue:** Several tasks use bare `shell:` rather than `ansible.builtin.command`
-or dedicated modules. These will trigger `ansible-lint` warnings.
-**Intended fix:** Audit and replace with appropriate modules or `command:` where
-`shell:` features (pipes, redirection) are not actually needed.
-**Deferred until:** ansible-lint is added to pre-commit (post refactor).
+### ~~Bare `shell:` tasks~~ — resolved in ansible refactor pass
+Note: two `ansible.builtin.shell:` tasks remain in `lnet_setup.yaml` — both
+use pipes and legitimately require shell.
 
-### `changed_when` / `failed_when` coverage
-**Files:** `ansible/server_stg_setup.yaml`, `ansible/lustre_rpm_setup.yaml`
-**Issue:** Some tasks lack explicit `changed_when: false` for read-only or
-idempotent commands, causing spurious change reporting. Confirmed violations:
-grubby default-kernel task (lustre_rpm_setup.yaml:67).
-**Deferred until:** Ansible refactor pass.
+### ~~`changed_when` / `failed_when` coverage~~ — resolved in ansible refactor pass
+Note: `lustre_rpm_setup.yaml:67` entry was stale — that task is a conditional
+write under a `when:` guard and correctly reports changed when it runs.
 
-### Incorrect `ansible.builtin.mount` FQCN
-**Files:** `ansible/client_setup.yaml:19`, `ansible/server_stg_setup.yaml:37`
-**Issue:** `mount` moved to `ansible.posix`, not `ansible.builtin`. One task
-uses the wrong FQCN (`ansible.builtin.mount`), one uses the bare name (`mount`).
-Both should be `ansible.posix.mount`.
-**Intended fix:** Update both task module references; add `ansible.posix` to
-collection install instructions alongside `community.general`.
-**Deferred until:** Ansible refactor pass.
+### ~~Incorrect `ansible.builtin.mount` FQCN~~ — resolved in ansible refactor pass
 
 ### ~~`ansible.posix` collection missing from install instructions~~ — resolved in README.md and docs/runbook.md
 
