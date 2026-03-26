@@ -15,8 +15,8 @@ sections are complete before proceeding:
 - Terraform >= 1.6 installed
 - Python venv activated with `requirements.txt` installed
 - `ansible-galaxy collection install community.general` completed
-- `ansible/hosts.ini` copied from example (management IPs filled in after Phase 1)
 - `ansible/group_vars/all.yml` `ansible_user` set to your VM username
+- Note: `ansible/hosts.ini` is generated automatically after Phase 1 — do not edit it by hand
 
 ---
 
@@ -35,13 +35,15 @@ terraform init
 terraform apply
 ```
 
-After `apply` completes, retrieve the management IPs:
+After `apply` completes, generate the Ansible inventory from Terraform output:
 
 ```bash
-terraform output
+cd ..
+python3 scripts/gen_inventory.py
 ```
 
-Update `ansible/hosts.ini` with the `ansible_host` value for each node.
+This writes `ansible/hosts.ini` from the `management_ips` Terraform output.
+The file is gitignored and owned by the script — do not edit it by hand.
 
 ---
 

@@ -40,12 +40,6 @@ self-hosted runner for integration tests against the live cluster.
 
 ## Terraform
 
-### VM cloud-init and post-provision Ansible integration
-**Issue:** Terraform skeleton exists but VM resources are not yet defined.
-**Intended fix:** Implement `libvirt_cloudinit_disk`, `libvirt_domain` resources
-per role, and wire Terraform outputs to feed `ansible_host` into inventory.
+### ~~VM cloud-init and post-provision Ansible integration~~ — resolved in 8673d8a
 
-### Inventory management
-**Issue:** `ansible/hosts.ini` is manually updated with Terraform output IPs.
-**Intended fix:** Consider a Python glue script or Terraform local-exec to
-auto-populate management IPs into a generated inventory file.
+### ~~Inventory management~~ — resolved in scripts/gen_inventory.py
