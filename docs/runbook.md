@@ -17,6 +17,16 @@ sections are complete before proceeding:
 - `ansible-galaxy collection install community.general ansible.posix` completed
 - `ansible/group_vars/all.yml` `ansible_user` set to your VM username
 - `ansible/hosts.ini` is generated automatically after Phase 1 — do not create or edit it by hand
+- SSH key present at `~/.ssh/id_ed25519.pub` (Terraform injects this into VMs via cloud-init)
+
+If you do not have an ed25519 key:
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ""
+```
+
+If you prefer a different key type or path, override `ssh_public_key_path` in
+`terraform.tfvars` before Phase 1.
 
 If the default management network (`10.0.100.0/24`) conflicts with your host:
 

@@ -20,6 +20,7 @@ The following must be installed on the KVM host before starting:
 | Terraform | >= 1.6 | [install guide](https://developer.hashicorp.com/terraform/install) |
 | Python | >= 3.9 | System Python on Rocky 9.4 |
 | git | — | |
+| SSH keypair | ed25519 | `~/.ssh/id_ed25519.pub` injected into VMs by Terraform; override path in `terraform.tfvars` if needed |
 
 ## Setup
 
