@@ -14,7 +14,7 @@ sections are complete before proceeding:
 - libvirt / KVM running on the host
 - Terraform >= 1.6 installed
 - Python venv activated with `requirements.txt` installed
-- `ansible-galaxy collection install community.general` completed
+- `ansible-galaxy collection install community.general ansible.posix` completed
 - `ansible/group_vars/all.yml` `ansible_user` set to your VM username
 - Note: `ansible/hosts.ini` is generated automatically after Phase 1 — do not edit it by hand
 

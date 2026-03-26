@@ -33,13 +33,7 @@ Both should be `ansible.posix.mount`.
 collection install instructions alongside `community.general`.
 **Deferred until:** Ansible refactor pass.
 
-### `ansible.posix` collection missing from install instructions
-**Files:** `README.md`, `docs/runbook.md`
-**Issue:** `ansible.posix` is required (for `mount`) but not listed in
-prerequisites alongside `community.general`.
-**Intended fix:** Add `ansible-galaxy collection install ansible.posix` to
-Phase 0 of the runbook and the README prerequisites.
-**Deferred until:** Ansible refactor pass (fix alongside the FQCN rename).
+### ~~`ansible.posix` collection missing from install instructions~~ — resolved in README.md and docs/runbook.md
 
 ---
 

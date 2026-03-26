@@ -1,6 +1,6 @@
-# Lustre Dev Blueprint
+# lustre-local-sandbox
 
-A repeatable KVM-based test environment for a Lustre parallel filesystem cluster,
+A repeatable KVM-based runbook for a Lustre parallel filesystem cluster,
 with Ansible configuration and Terraform infrastructure provisioning. Intended as
 a portfolio demo of building and automating a storage technology stack from scratch.
 
@@ -26,8 +26,8 @@ The following must be installed on the KVM host before starting:
 **1. Clone the repository**
 
 ```bash
-git clone <repo-url> lustre-dev-blueprint
-cd lustre-dev-blueprint
+git clone https://github.com/urregum/lustre-local-sandbox.git
+cd lustre-local-sandbox
 ```
 
 **2. Create and activate a Python virtual environment**
@@ -38,10 +38,10 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**3. Install the required Ansible collection**
+**3. Install the required Ansible collections**
 
 ```bash
-ansible-galaxy collection install community.general
+ansible-galaxy collection install community.general ansible.posix
 ```
 
 **4. Install pre-commit hooks**
@@ -52,13 +52,8 @@ pre-commit install
 
 **5. Configure your inventory**
 
-```bash
-cp ansible/hosts.ini.example ansible/hosts.ini
-```
-
-Edit `ansible/hosts.ini` to set `ansible_host` for each node to its management
-IP (from Terraform output after provisioning). The LNET IPs (`ip_enp7`, `ip_enp8`)
-are pre-populated and match the Terraform network configuration.
+`ansible/hosts.ini` is generated automatically from Terraform output after
+Phase 1 of the runbook — do not create or edit it by hand.
 
 `ansible/group_vars/all.yml` sets `ansible_user: ansible` by default, which
 matches the Terraform `vm_user` default. If you override `vm_user` in
