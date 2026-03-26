@@ -6,6 +6,7 @@ ansible-core>=2.15
 # Linting and formatting (also used by pre-commit)
 yamllint>=1.35
 black>=24.0
+ansible-lint>=24.0
 
 # Pre-commit framework
 pre-commit>=3.7
