@@ -100,11 +100,17 @@
     - name: Ping MGS from all nodes, lnet0
       ansible.builtin.command: "lctl ping {{ mgs_lnet0_ip }}@tcp"
       register: ping_result
+      until: ping_result.rc == 0
+      retries: 18
+      delay: 10
       changed_when: false
 
     - name: Ping MGS from all nodes, lnet1
       ansible.builtin.command: "lctl ping {{ mgs_lnet1_ip }}@tcp"
       register: ping_result
+      until: ping_result.rc == 0
+      retries: 18
+      delay: 10
       changed_when: false
       when: ip_lnet1 is defined
 
