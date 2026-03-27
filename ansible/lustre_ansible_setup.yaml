@@ -1,4 +1,7 @@
 ---
+- name: Wait for all cluster VMs to be reachable
+  import_playbook: wait_for_hosts.yaml
+
 - name: Lustre RPM installation and server reboot
   import_playbook: lustre_rpm_setup.yaml
 
