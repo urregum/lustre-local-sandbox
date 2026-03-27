@@ -16,8 +16,34 @@ the runbook to fully prepare your VM host.
 
 ## Sandbox Environment
 
-<TODO: Insert architecture image here that includes layout and networks, with indications of Terraform
-and ansible tools to the side>
+```mermaid
+flowchart LR
+    subgraph toolchain["Deployment Toolchain"]
+        direction TB
+        TF["Terraform\nProvision"]
+        PY["gen_inventory.py"]
+        AN["Ansible\nConfigure"]
+        TF --> PY --> AN
+    end
+
+    subgraph cluster["Lustre 2.16.1"]
+        direction TB
+        CL(["Client\nIOR · MPI"])
+
+        subgraph lnet["lustre-lnet0 · Single-Rail TCP"]
+            direction LR
+            MG["MGS"]
+            MD["MDS × 2"]
+            OS["OSS × 4"]
+        end
+
+        CL -->|"Mount"| MG
+        CL -->|"Metadata Ops"| MD
+        CL -->|"Data I/O"| OS
+    end
+
+    toolchain --> cluster
+```
 
 **Default cluster topology:** 1 client, 1 MGS, 2 MDS, 4 OSS
 * VMs have 2 vCPUs, a 20GiB boot disk, a management and LNET virtual network adapter.
