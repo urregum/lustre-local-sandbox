@@ -52,6 +52,8 @@ terraform init
 terraform apply
 ```
 
+## Phase 1.5 — Glue Script (Python)
+
 After `apply` completes, generate the Ansible inventory from Terraform output:
 
 ```bash
@@ -60,7 +62,11 @@ python3 scripts/gen_inventory.py
 ```
 
 This writes `ansible/hosts.ini` from the `management_ips` Terraform output.
-The file is gitignored and owned by the script — do not edit it by hand.
+The file is gitignored and owned by the script — do not edit it by hand. The
+script will also clear up any known_hosts entries from prior clusters.
+
+While the glue script run could be automated, this is a good point to check
+terraform resources are as expected before time is spent on playbooks.
 
 ---
 
@@ -68,6 +74,7 @@ The file is gitignored and owned by the script — do not edit it by hand.
 
 Run the main playbook from the `ansible/` directory. This handles:
 
+- Validating the VMs are ready to proceed.
 - Whamcloud RPM installation (Lustre kernel on servers, client + DKMS on client)
 - LNet network interface configuration
 - Lustre filesystem formatting and mounting (MGS → MDS → OSS, in order)
@@ -78,9 +85,13 @@ cd ansible/
 ansible-playbook -i hosts.ini lustre_ansible_setup.yaml
 ```
 
+The default for playbooks is to fail on any error.
+
 ---
 
 ## Phase 3 — Validate
+
+Your host user ssh-key is made available for the 'ansible' user on all VMs.
 
 Verify cluster health from any server node:
 
@@ -96,18 +107,26 @@ df -h /mnt/lustre
 lfs df
 ```
 
-Run a basic IOR benchmark from the client:
+Run basic IOR and mdtest benchmarks from a client. The default Lustre mount has a
+/mnt/lustre/ansible subdirectory set up for testing:
 
 ```bash
 # Write then read using direct I/O (bypasses kernel page cache for accurate results).
 # Adjust -np to match available client vCPUs (see mpi_slots_per_client in group_vars/all.yml).
-mpirun -np 2 ior -w -r -b 1g -t 1m -F -O useO_DIRECT=1 -o /mnt/lustre/ansible/ior_test
+mpirun --hostfile mpi_hostfile -np 2 ior -w -r -a POSIX -b 64m -t 1m -s 4 -F -C -e -O useO_DIRECT=1 -o /mnt/lustre/ansible/ior_test
+
+# Test metadata servers
+mpirun --hostfile mpi_hostfile -np 2 mdtest -n 1000 -i 3 -u -d /mnt/lustre/ansible/testdir
 ```
 
-> **Note:** Without `-O useO_DIRECT=1`, a combined write+read (`-w -r`) will serve
-> reads from the Lustre client extent cache rather than disk, producing inflated read
-> numbers (~1.5 GB/s vs actual OSS throughput). For a true cold read, run write and
-> read as separate passes or unmount and remount the client between them.
+At this point, the system is ready for sandbox experimentation!
+
+> **Note:** Without `-O useO_DIRECT=1`, writes fill the page cache and the subsequent
+> read pass serves from it, producing wildly inflated read numbers (18,000+ MiB/s in
+> this environment — far beyond what the virtual OSS disks can deliver). With
+> `useO_DIRECT=1`, both passes bypass the cache and reflect actual throughput
+> (~130 MiB/s write, ~1,500 MiB/s read in the default topology due to Lustre
+> read-ahead across 4 OSTs).
 
 ---
 
