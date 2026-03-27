@@ -16,10 +16,18 @@
         state: directory
         mode: '0755'
 
+    - name: Wait for MGS LNET to be ready before mounting
+      ansible.builtin.command: lctl ping {{ mgs_lnet0_ip }}@tcp
+      register: mgs_ping
+      until: mgs_ping.rc == 0
+      retries: 18
+      delay: 10
+      changed_when: false
+
     - name: Mount Lustre filesystem
       ansible.posix.mount:
         path: /mnt/lustre
-        src: "{{ mgs_lnet0_ip }}@tcp,{{ mgs_lnet1_ip }}@tcp:/{{ lustre_fsname }}"  # yamllint disable-line rule:line-length
+        src: "{{ mgs_lnet0_ip }}@tcp:/{{ lustre_fsname }}"
         fstype: lustre
         opts: "_netdev,noauto"
         state: mounted
@@ -66,6 +74,14 @@
         cmd: make install
         chdir: /usr/local/src/ior
       when: not ior_binary.stat.exists
+
+    - name: Add OpenMPI bin directory to system PATH
+      ansible.builtin.copy:
+        dest: /etc/profile.d/openmpi.sh
+        content: "export PATH=/usr/lib64/openmpi/bin:$PATH\n"
+        owner: root
+        group: root
+        mode: '0644'
 
     - name: Generate MPI hosts file from inventory
       ansible.builtin.template:
