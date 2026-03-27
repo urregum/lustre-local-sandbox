@@ -50,7 +50,7 @@ A subsequent `terraform apply` will rebuild from scratch.
 
 **What it does:**
 - Destroys all libvirt VMs, their disk volumes, and cloud-init ISOs
-- Removes the `lustre-mgmt`, `lustre-lnet0`, and `lustre-lnet1` networks
+- Removes the `lustre-mgmt` and `lustre-lnet0` networks
 - Removes the `lustre-demo` storage pool and its directory contents
 
 ```bash

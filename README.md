@@ -65,7 +65,7 @@ Install pre-commit hooks after cloning:
 pre-commit install
 ```
 
-Hooks run yamllint, black, and basic file checks on commit.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for commit standards, including sign-off requirements.
 
 ---
 

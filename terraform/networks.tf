@@ -30,11 +30,3 @@ resource "libvirt_network" "lustre_lnet0" {
   mode      = "none"
   autostart = true
 }
-
-# LNet network 1 — isolated (no external routing).
-# Static IPs assigned by Ansible via nmcli after provisioning.
-resource "libvirt_network" "lustre_lnet1" {
-  name      = "lustre-lnet1"
-  mode      = "none"
-  autostart = true
-}

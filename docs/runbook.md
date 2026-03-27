@@ -43,7 +43,7 @@ Initialize and apply the Terraform configuration. This will:
 
 - Create the `lustre-demo` libvirt storage pool at `/var/lib/libvirt/lustre-demo/`
 - Download the Rocky Linux 9.4 cloud image (first run only)
-- Create the `lustre-mgmt` (NAT), `lustre-lnet0`, and `lustre-lnet1` networks
+- Create the `lustre-mgmt` (NAT) and `lustre-lnet0` networks
 - Provision 8 VMs (1 client, 1 MGS, 2 MDS, 4 OSS) with cloud-init configuration
 
 ```bash
@@ -99,9 +99,15 @@ lfs df
 Run a basic IOR benchmark from the client:
 
 ```bash
-# Example: single-process write/read test
-mpirun -np 1 ior -w -r -b 1g -t 1m -F -o /mnt/lustre/ior_test
+# Write then read using direct I/O (bypasses kernel page cache for accurate results).
+# Adjust -np to match available client vCPUs (see mpi_slots_per_client in group_vars/all.yml).
+mpirun -np 2 ior -w -r -b 1g -t 1m -F -O useO_DIRECT=1 -o /mnt/lustre/ansible/ior_test
 ```
+
+> **Note:** Without `-O useO_DIRECT=1`, a combined write+read (`-w -r`) will serve
+> reads from the Lustre client extent cache rather than disk, producing inflated read
+> numbers (~1.5 GB/s vs actual OSS throughput). For a true cold read, run write and
+> read as separate passes or unmount and remount the client between them.
 
 ---
 
