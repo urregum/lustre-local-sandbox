@@ -57,6 +57,10 @@ resource "libvirt_domain" "mgs" {
   autostart = false
   cloudinit = libvirt_cloudinit_disk.mgs.id
 
+  cpu {
+    mode = "host-passthrough"
+  }
+
   network_interface {
     network_id = libvirt_network.lustre_mgmt.id
   }
@@ -134,6 +138,10 @@ resource "libvirt_domain" "mds" {
   memory    = var.mds.memory
   autostart = false
   cloudinit = libvirt_cloudinit_disk.mds[count.index].id
+
+  cpu {
+    mode = "host-passthrough"
+  }
 
   network_interface {
     network_id = libvirt_network.lustre_mgmt.id
@@ -213,6 +221,10 @@ resource "libvirt_domain" "oss" {
   autostart = false
   cloudinit = libvirt_cloudinit_disk.oss[count.index].id
 
+  cpu {
+    mode = "host-passthrough"
+  }
+
   network_interface {
     network_id = libvirt_network.lustre_mgmt.id
   }
@@ -280,6 +292,10 @@ resource "libvirt_domain" "client" {
   memory    = var.client.memory
   autostart = false
   cloudinit = libvirt_cloudinit_disk.client.id
+
+  cpu {
+    mode = "host-passthrough"
+  }
 
   network_interface {
     network_id = libvirt_network.lustre_mgmt.id

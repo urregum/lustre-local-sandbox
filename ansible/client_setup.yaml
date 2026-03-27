@@ -19,10 +19,15 @@
     - name: Mount Lustre filesystem
       ansible.posix.mount:
         path: /mnt/lustre
-        src: "{{ mgs_lnet0_ip }}@tcp,{{ mgs_lnet1_ip }}@tcp:/{{ lustre_fsname }}"
+        src: "{{ mgs_lnet0_ip }}@tcp,{{ mgs_lnet1_ip }}@tcp:/{{ lustre_fsname }}"  # yamllint disable-line rule:line-length
         fstype: lustre
         opts: "_netdev,noauto"
         state: mounted
+
+    - name: Set Lustre root permissions for multi-user access
+      ansible.builtin.file:
+        path: /mnt/lustre
+        mode: '1777'
 
     - name: Check if IOR is already installed
       ansible.builtin.stat:
@@ -33,6 +38,7 @@
       ansible.builtin.git:
         repo: https://github.com/hpc/ior.git
         dest: /usr/local/src/ior
+        version: "3.3.0"
       when: not ior_binary.stat.exists
 
     - name: Bootstrap IOR build system

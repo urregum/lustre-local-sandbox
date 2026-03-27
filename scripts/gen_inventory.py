@@ -59,20 +59,20 @@ def render_inventory(ips):
     return f"""\
 {HEADER}
 [mgmt_servers]
-mgs ansible_host={ips['mgs']} ip_lnet0=192.168.100.9/16 ip_lnet1=192.168.100.10/16 fslabel="MGS" mntpath="mgs"
+mgs ansible_host={ips['mgs']} ip_lnet0=192.168.100.9/24 ip_lnet1=192.168.101.9/24 fslabel="MGS" mntpath="mgs"
 
 [metadata_servers]
-mds1 ansible_host={ips['mds1']} ip_lnet0=192.168.100.11/16 ip_lnet1=192.168.100.12/16 mdt_index=0 fslabel="lustrefs-MDT0000" mntpath="mdt"
-mds2 ansible_host={ips['mds2']} ip_lnet0=192.168.100.13/16 ip_lnet1=192.168.100.14/16 mdt_index=1 fslabel="lustrefs-MDT0001" mntpath="mdt"
+mds1 ansible_host={ips['mds1']} ip_lnet0=192.168.100.11/24 ip_lnet1=192.168.101.11/24 mdt_index=0 fslabel="lustrefs-MDT0000" mntpath="mdt"
+mds2 ansible_host={ips['mds2']} ip_lnet0=192.168.100.13/24 ip_lnet1=192.168.101.13/24 mdt_index=1 fslabel="lustrefs-MDT0001" mntpath="mdt"
 
 [object_servers]
-oss1 ansible_host={ips['oss1']} ip_lnet0=192.168.100.15/16 ip_lnet1=192.168.100.16/16 ost_index=0 fslabel="lustrefs-OST0000" mntpath="ost"
-oss2 ansible_host={ips['oss2']} ip_lnet0=192.168.100.17/16 ip_lnet1=192.168.100.18/16 ost_index=1 fslabel="lustrefs-OST0001" mntpath="ost"
-oss3 ansible_host={ips['oss3']} ip_lnet0=192.168.100.19/16 ip_lnet1=192.168.100.20/16 ost_index=2 fslabel="lustrefs-OST0002" mntpath="ost"
-oss4 ansible_host={ips['oss4']} ip_lnet0=192.168.100.21/16 ip_lnet1=192.168.100.22/16 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
+oss1 ansible_host={ips['oss1']} ip_lnet0=192.168.100.15/24 ip_lnet1=192.168.101.15/24 ost_index=0 fslabel="lustrefs-OST0000" mntpath="ost"
+oss2 ansible_host={ips['oss2']} ip_lnet0=192.168.100.17/24 ip_lnet1=192.168.101.17/24 ost_index=1 fslabel="lustrefs-OST0001" mntpath="ost"
+oss3 ansible_host={ips['oss3']} ip_lnet0=192.168.100.19/24 ip_lnet1=192.168.101.19/24 ost_index=2 fslabel="lustrefs-OST0002" mntpath="ost"
+oss4 ansible_host={ips['oss4']} ip_lnet0=192.168.100.21/24 ip_lnet1=192.168.101.21/24 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
 
 [clients]
-client1 ansible_host={ips['client1']} ip_lnet0=192.168.100.7/16 ip_lnet1=192.168.100.8/16
+client1 ansible_host={ips['client1']} ip_lnet0=192.168.100.7/24 ip_lnet1=192.168.101.7/24
 
 [servers:children]
 mgmt_servers

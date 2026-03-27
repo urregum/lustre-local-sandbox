@@ -1,10 +1,10 @@
 version: 2
 ethernets:
-  enp1s0:
+  eth0:
     addresses:
       - ${mgmt_ip}/${mgmt_prefix}
     routes:
-      - to: default
+      - to: 0.0.0.0/0
         via: ${mgmt_gateway}
     nameservers:
       addresses:

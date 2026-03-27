@@ -20,16 +20,23 @@ lustre_fsname: "lustrefs"
 # Override in host_vars if client VMs are resized independently.
 mpi_slots_per_client: 2
 
-# MGS LNET interface IPs — used by MDS/OSS/client nodes to register with the MGS.
-# These must match the ip_lnet0/ip_lnet1 values set for the mgs host in hosts.ini.
+# MGS LNET interface IPs — used by MDS/OSS/client nodes to register with MGS.
+# Must match ip_lnet0/ip_lnet1 values set for the mgs host in hosts.ini.
 mgs_lnet0_ip: "192.168.100.9"
-mgs_lnet1_ip: "192.168.100.10"
+mgs_lnet1_ip: "192.168.101.9"
 
-# Data disk device on all server VMs (boot=vda, data=vdb per Terraform disk order).
+# Data disk device on all server VMs (boot=vda, data=vdb per Terraform order).
 lustre_data_device: /dev/vdb
 
 # LNET interface names on Terraform-provisioned VMs.
-# KVM virtio NIC PCI order: enp1s0 = management, enp2s0 = lnet0, enp3s0 = lnet1.
+# net.ifnames=0 forces traditional naming: eth0=mgmt, eth1=lnet0, eth2=lnet1.
 # Override here if your environment assigns different names.
-lnet_iface_0: enp2s0
-lnet_iface_1: enp3s0
+lnet_iface_0: eth1
+lnet_iface_1: eth2
+
+# LNET networks string written to /etc/modprobe.d/lnet.conf.
+# Servers use both interfaces for dual-rail; clients use lnet0 only.
+# kmod-lustre-client on stock kernel triggers "Export already connecting"
+# when Multi-Rail attempts simultaneous connections from two NIDs.
+# Override per-host in host_vars/ if needed.
+lnet_networks: "tcp0({{ lnet_iface_0 }},{{ lnet_iface_1 }})"

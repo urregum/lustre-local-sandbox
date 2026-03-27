@@ -7,7 +7,7 @@ variable "libvirt_pool_path" {
 variable "rocky_cloud_image_url" {
   description = "URL or local file path for the Rocky Linux 9.4 generic cloud image (.qcow2)"
   type        = string
-  default     = "https://download.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2"
+  default     = "https://dl.rockylinux.org/vault/rocky/9.4/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2"
 }
 
 variable "mgmt_network_cidr" {
@@ -16,17 +16,6 @@ variable "mgmt_network_cidr" {
   default     = "10.0.100.0/24"
 }
 
-variable "lnet_network_cidr_0" {
-  description = "CIDR for lustre-lnet0 (isolated). Hosts use static IPs in this range."
-  type        = string
-  default     = "192.168.100.0/16"
-}
-
-variable "lnet_network_cidr_1" {
-  description = "CIDR for lustre-lnet1 (isolated). Hosts use static IPs in this range."
-  type        = string
-  default     = "192.168.100.0/16"
-}
 
 variable "boot_disk_gb" {
   description = "Boot disk size in GiB for all VMs"

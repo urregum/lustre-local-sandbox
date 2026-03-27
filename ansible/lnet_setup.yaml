@@ -6,7 +6,7 @@
     - name: Setup lnet conf file
       ansible.builtin.copy:
         dest: /etc/modprobe.d/lnet.conf
-        content: "options lnet networks=tcp0({{ lnet_iface_0 }},{{ lnet_iface_1 }})\n"
+        content: "options lnet networks={{ lnet_networks }}\n"
         owner: root
         group: root
         mode: '0644'
@@ -21,8 +21,8 @@
         state: present
         autoconnect: true
       loop:
-        - {conn: "lustre-net0", iface: "{{ lnet_iface_0 }}", ip: "{{ ip_lnet0 }}"}
-        - {conn: "lustre-net1", iface: "{{ lnet_iface_1 }}", ip: "{{ ip_lnet1 }}"}
+        - {conn: "lustre-net0", iface: "{{ lnet_iface_0 }}", ip: "{{ ip_lnet0 }}"}  # yamllint disable-line rule:line-length
+        - {conn: "lustre-net1", iface: "{{ lnet_iface_1 }}", ip: "{{ ip_lnet1 }}"}  # yamllint disable-line rule:line-length
       register: nm_output
 
     - name: Bring up connections if changed

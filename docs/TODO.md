@@ -58,3 +58,15 @@ at 1.0. Direct push to main is acceptable for now.
 ### ~~VM cloud-init and post-provision Ansible integration~~ — resolved in 8673d8a
 
 ### ~~Inventory management~~ — resolved in scripts/gen_inventory.py
+
+### /etc/hosts population on KVM host
+**Status:** Deferred — manual workaround in place.
+**Intended fix:** Add a post-`terraform apply` step (script or Ansible local task)
+that writes cluster hostnames and management IPs to `/etc/hosts` on the KVM host,
+making `ssh ansible@mgs` etc. work without looking up IPs.
+
+### Client pool scaling documentation
+**Status:** Deferred — current topology is fixed at one client.
+**Intended fix:** Document in runbook how to add client VMs: bump `client.count`
+(or add `client2`/`client3` entries to `mgmt_ips`), re-run `terraform apply`, and
+re-run `gen_inventory.py` + the client Ansible plays against the new hosts.

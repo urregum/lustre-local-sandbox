@@ -1,0 +1,7 @@
+---
+# kmod-lustre-client on the stock Rocky kernel triggers an "Export already
+# connecting" Multi-Rail collision when both NIDs attempt simultaneous
+# connections to the MGS. Restrict the client to lnet0 (eth1) only.
+# eth2 is still configured by NetworkManager (lustre-net1 connection) for
+# consistency, but lnet does not add it as an NI.
+lnet_networks: "tcp0({{ lnet_iface_0 }})"
