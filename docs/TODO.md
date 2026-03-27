@@ -30,6 +30,15 @@ write under a `when:` guard and correctly reports changed when it runs.
 **Intended fix:** Add `ansible-lint` stanza to `.pre-commit-config.yaml` and
 remove the deferred comment.
 
+### yamllint line-length exceptions
+**Status:** Deferred to 1.0 — exceptions were added as a quick fix during
+development. Using `# yamllint disable-line rule:line-length` is an anti-pattern
+that suppresses the signal rather than fixing it.
+**Intended fix:** Restructure the offending lines properly — use YAML block
+scalars (`>-`) for long URLs in `lustre_rpm_setup.yaml`, split long inline
+dicts in `lnet_setup.yaml` into multi-line form, and wrap long strings in
+`client_setup.yaml`. Remove all `yamllint disable-line` comments once done.
+
 ### GitHub Actions — lint workflow
 **Status:** Unblocked — no runner or cluster required.
 **Intended fix:** Add `.github/workflows/lint.yml` triggered on push to main.
