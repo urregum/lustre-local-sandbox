@@ -1,0 +1,8 @@
+[general]
+# Enforce Conventional Commits type+format (feat, fix, docs, etc.)
+contrib=CC1
+# Body is optional; not every commit warrants one
+ignore=body-is-missing
+
+[title-max-length]
+line-length=72

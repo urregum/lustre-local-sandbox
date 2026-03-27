@@ -32,6 +32,7 @@ HEADER = """\
 
 
 def get_management_ips():
+    """Return the management_ips map from `terraform output -json`."""
     try:
         result = subprocess.run(
             ["terraform", "output", "-json"],
@@ -56,20 +57,27 @@ def get_management_ips():
 
 
 def render_inventory(ips):
+    """Render hosts.ini content from the Terraform management IP mapping."""
     return f"""\
 {HEADER}
 [mgmt_servers]
 mgs ansible_host={ips['mgs']} ip_lnet0=192.168.100.9/24 fslabel="MGS" mntpath="mgs"
 
 [metadata_servers]
-mds1 ansible_host={ips['mds1']} ip_lnet0=192.168.100.11/24 mdt_index=0 fslabel="lustrefs-MDT0000" mntpath="mdt"
-mds2 ansible_host={ips['mds2']} ip_lnet0=192.168.100.13/24 mdt_index=1 fslabel="lustrefs-MDT0001" mntpath="mdt"
+mds1 ansible_host={ips['mds1']} ip_lnet0=192.168.100.11/24 mdt_index=0\
+ fslabel="lustrefs-MDT0000" mntpath="mdt"
+mds2 ansible_host={ips['mds2']} ip_lnet0=192.168.100.13/24 mdt_index=1\
+ fslabel="lustrefs-MDT0001" mntpath="mdt"
 
 [object_servers]
-oss1 ansible_host={ips['oss1']} ip_lnet0=192.168.100.15/24 ost_index=0 fslabel="lustrefs-OST0000" mntpath="ost"
-oss2 ansible_host={ips['oss2']} ip_lnet0=192.168.100.17/24 ost_index=1 fslabel="lustrefs-OST0001" mntpath="ost"
-oss3 ansible_host={ips['oss3']} ip_lnet0=192.168.100.19/24 ost_index=2 fslabel="lustrefs-OST0002" mntpath="ost"
-oss4 ansible_host={ips['oss4']} ip_lnet0=192.168.100.21/24 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
+oss1 ansible_host={ips['oss1']} ip_lnet0=192.168.100.15/24 ost_index=0\
+ fslabel="lustrefs-OST0000" mntpath="ost"
+oss2 ansible_host={ips['oss2']} ip_lnet0=192.168.100.17/24 ost_index=1\
+ fslabel="lustrefs-OST0001" mntpath="ost"
+oss3 ansible_host={ips['oss3']} ip_lnet0=192.168.100.19/24 ost_index=2\
+ fslabel="lustrefs-OST0002" mntpath="ost"
+oss4 ansible_host={ips['oss4']} ip_lnet0=192.168.100.21/24 ost_index=3\
+ fslabel="lustrefs-OST0003" mntpath="ost"
 
 [clients]
 client1 ansible_host={ips['client1']} ip_lnet0=192.168.100.7/24
@@ -84,7 +92,7 @@ servers
 clients
 
 [lustre_cluster:vars]
-# ansible_user and mgs_enp*_ip are set in group_vars/all.yml
+# ansible_user and mgs_lnet0_ip are set in group_vars/all.yml
 # ansible_ssh_private_key_file=~/.ssh/id_ed25519
 """
 
@@ -99,21 +107,23 @@ def scrub_known_hosts(ips):
     nothing when the entry is absent.
     """
     for name, ip in ips.items():
-        result = subprocess.run(
-            ["ssh-keygen", "-R", ip],
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
+        try:
+            subprocess.run(
+                ["ssh-keygen", "-R", ip],
+                capture_output=True,
+                check=True,
+                text=True,
+            )
+            print(f"Scrubbed known_hosts: {ip} ({name})")
+        except subprocess.CalledProcessError as e:
             print(
-                f"WARNING: ssh-keygen -R {ip} ({name}) failed: {result.stderr}",
+                f"WARNING: ssh-keygen -R {ip} ({name}) failed: {e.stderr}",
                 file=sys.stderr,
             )
-        else:
-            print(f"Scrubbed known_hosts: {ip} ({name})")
 
 
 def main():
+    """Generate hosts.ini from Terraform output and scrub stale known_hosts entries."""
     ips = get_management_ips()
     scrub_known_hosts(ips)
     inventory = render_inventory(ips)
