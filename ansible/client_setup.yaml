@@ -9,6 +9,7 @@
 - name: Mount Lustre filesystem and set up client tooling
   hosts: clients
   become: true
+  any_errors_fatal: true
   tasks:
     - name: Ensure Lustre client mount point exists
       ansible.builtin.file:
@@ -30,6 +31,7 @@
         src: "{{ mgs_lnet0_ip }}@tcp:/{{ lustre_fsname }}"
         fstype: lustre
         opts: "_netdev,noauto"
+        boot: false
         state: mounted
 
     - name: Set Lustre root permissions for multi-user access

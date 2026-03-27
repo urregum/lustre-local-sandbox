@@ -6,6 +6,7 @@
 - name: Wait for cluster hosts to become reachable
   hosts: lustre_cluster
   gather_facts: false
+  any_errors_fatal: true
   tasks:
     - name: Wait for SSH to become available
       ansible.builtin.wait_for_connection:

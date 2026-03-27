@@ -4,6 +4,7 @@
 - name: Lustre Mgmt Storage Setup
   hosts: mgmt_servers
   become: true
+  any_errors_fatal: true
   tasks:
     - name: Check if {{ lustre_data_device }} has a Lustre filesystem
       ansible.builtin.command: tunefs.lustre --dryrun {{ lustre_data_device }}
@@ -42,12 +43,14 @@
         src: "{{ lustre_data_device }}"
         fstype: lustre
         opts: "_netdev,noauto"
+        boot: false
         state: mounted
 
 
 - name: Lustre Metadata Storage Setup
   hosts: metadata_servers
   become: true
+  any_errors_fatal: true
   tasks:
     - name: Check if {{ lustre_data_device }} has a Lustre filesystem
       ansible.builtin.command: tunefs.lustre --dryrun {{ lustre_data_device }}
@@ -87,11 +90,13 @@
         src: "{{ lustre_data_device }}"
         fstype: lustre
         opts: "_netdev,noauto"
+        boot: false
         state: mounted
 
 - name: Lustre Object Storage Setup
   hosts: object_servers
   become: true
+  any_errors_fatal: true
   tasks:
     - name: Check if {{ lustre_data_device }} has a Lustre filesystem
       ansible.builtin.command: tunefs.lustre --dryrun {{ lustre_data_device }}
@@ -131,11 +136,13 @@
         src: "{{ lustre_data_device }}"
         fstype: lustre
         opts: "_netdev,noauto"
+        boot: false
         state: mounted
 
 - name: Health Checks
   hosts: servers
   become: true
+  any_errors_fatal: true
   tasks:
     - name: Verify all Lustre devices are UP
       ansible.builtin.command: lctl dl

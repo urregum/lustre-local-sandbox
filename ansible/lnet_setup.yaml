@@ -2,6 +2,7 @@
 - name: Lustre Networking Setup
   hosts: lustre_cluster
   become: true  # Runs commands with sudo
+  any_errors_fatal: true
   tasks:
     - name: Setup lnet conf file
       ansible.builtin.copy:

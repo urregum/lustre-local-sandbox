@@ -9,6 +9,7 @@
 - name: Configure e2fsprogs repository and install on all nodes
   hosts: lustre_cluster
   become: true
+  any_errors_fatal: true
   tasks:
     - name: Configure Whamcloud e2fsprogs repository
       ansible.builtin.yum_repository:
@@ -28,6 +29,7 @@
 - name: Install Lustre server packages and reboot into Lustre kernel
   hosts: servers
   become: true
+  any_errors_fatal: true
   tasks:
     - name: Configure Whamcloud Lustre server repository
       ansible.builtin.yum_repository:
@@ -84,6 +86,7 @@
 - name: Install Lustre client and MPI packages
   hosts: clients
   become: true
+  any_errors_fatal: true
   tasks:
     - name: Configure Whamcloud Lustre client repository
       ansible.builtin.yum_repository:

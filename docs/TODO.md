@@ -25,6 +25,15 @@ write under a `when:` guard and correctly reports changed when it runs.
 
 ## CI / Toolchain
 
+### ansible.posix collection deprecation warnings
+**Status:** Deferred — warnings come from inside the `ansible.posix.mount`
+module, not from our playbooks. The module imports `to_bytes`/`to_native` from
+`ansible.module_utils._text` and passes `warnings` to `exit_json`, both
+deprecated in ansible-core 2.23/2.24.
+**Intended fix:** Upgrade the `ansible.posix` collection when a version that
+uses `ansible.module_utils.common.text.converters` is available. No change to
+our playbooks required.
+
 ### ansible-lint pre-commit hook
 **Status:** Unblocked — Ansible refactor complete, clean lint baseline established.
 **Intended fix:** Add `ansible-lint` stanza to `.pre-commit-config.yaml` and
@@ -69,19 +78,35 @@ at 1.0. Direct push to main is acceptable for now.
 ### ~~Inventory management~~ — resolved in scripts/gen_inventory.py
 
 ### Provision gate — site.yaml wrapper
-**Status:** Partially addressed — `wait_for_hosts.yaml` exists and must be run
-manually between `gen_inventory.py` and `lnet_setup.yaml`. This is documented
-but relies on operator discipline.
-**Intended fix:** Add a `site.yaml` that runs the full provision sequence
-(`wait_for_hosts` → `lnet_setup` → `server_stg_setup` → `client_setup`) with
-the gate built in, so a single `ansible-playbook site.yaml` replaces the
-four-step manual sequence.
+**Status:** Partially addressed — `lustre_ansible_setup.yaml` runs the full
+sequence end-to-end (wait_for_hosts → lustre_rpm_setup → lnet_setup →
+server_stg_setup → client_setup). The pre-mount `lctl ping` gate in
+`client_setup.yaml` prevents mounting before MGS LNET is responsive.
+**Remaining gap:** No gate on server-side dual-rail lnet1 stability. After
+reboot, the lnet1 (192.168.101.x) network takes ~15-30 minutes to fully
+stabilize across all 7 VMs; transient recovery cascades occur during this
+window. Root cause not fully confirmed — likely a boot-ordering timing issue
+rather than a persistent hardware/config fault.
+**Intended fix:** Investigate and root-cause the post-boot lnet1 instability.
+Options include: adding a server-side stability gate (wait for all peer NIs to
+exit recovery before proceeding to client play), increasing post-reboot delay
+in `lustre_rpm_setup.yaml`, or reducing LNET peer timeout to shorten the
+recovery window.
 
 ### /etc/hosts population on KVM host
 **Status:** Deferred — manual workaround in place.
 **Intended fix:** Add a post-`terraform apply` step (script or Ansible local task)
 that writes cluster hostnames and management IPs to `/etc/hosts` on the KVM host,
 making `ssh ansible@mgs` etc. work without looking up IPs.
+
+### IOR benchmark — drop_caches and direct I/O notes
+**Status:** Deferred — not part of provisioning automation.
+**Intended fix:** Document in runbook that meaningful IOR read benchmarks
+require (a) `echo 3 > /proc/sys/vm/drop_caches` on all OSS nodes and the
+client immediately before the read pass, and (b) `-O useO_DIRECT=1` to bypass
+the Lustre client extent cache. Without both, reads reflect local cache speed
+rather than OST throughput. Note that with a single client node, `-C`
+(constant task offset) does not prevent same-node page cache hits.
 
 ### Client pool scaling documentation
 **Status:** Deferred — current topology is fixed at one client.
