@@ -16,10 +16,7 @@
       ansible.builtin.command: >
         mkfs.lustre --fsname={{ lustre_fsname }}
         --mgs
-        --mgsnode={{
-          ip_lnet0.split('/')[0] ~ '@tcp,' ~
-          ip_lnet1.split('/')[0] ~ '@tcp'
-        }}
+        --mgsnode={{ ip_lnet0.split('/')[0] ~ '@tcp' }}
         {{ lustre_data_device }}
       when: tunefs_result.rc != 0
 
@@ -62,10 +59,7 @@
       ansible.builtin.command: >
         mkfs.lustre --fsname={{ lustre_fsname }}
         --mdt
-        --mgsnode={{
-          mgs_lnet0_ip ~ '@tcp,' ~
-          mgs_lnet1_ip ~ '@tcp'
-        }}
+        --mgsnode={{ mgs_lnet0_ip ~ '@tcp' }}
         --index={{ mdt_index }}
         {{ lustre_data_device }}
       when: tunefs_result.rc != 0
@@ -108,10 +102,7 @@
       ansible.builtin.command: >
         mkfs.lustre --fsname={{ lustre_fsname }}
         --ost
-        --mgsnode={{
-          mgs_lnet0_ip ~ '@tcp,' ~
-          mgs_lnet1_ip ~ '@tcp'
-        }}
+        --mgsnode={{ mgs_lnet0_ip ~ '@tcp' }}
         --index={{ ost_index }}
         {{ lustre_data_device }}
       when: tunefs_result.rc != 0

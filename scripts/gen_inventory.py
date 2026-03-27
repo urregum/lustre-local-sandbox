@@ -25,8 +25,8 @@ HEADER = """\
 # Do not edit by hand; re-run the script after any `terraform apply`.
 #
 # ansible_host: management IP from Terraform output (lustre-mgmt NAT network).
-# ip_lnet0 / ip_lnet1: static LNET IPs on the lustre-lnet0/lnet1 networks; configured by
-#   Ansible via nmcli. Values match the default LNET address scheme; update
+# ip_lnet0: static LNET IP on the lustre-lnet0 network; configured by Ansible
+#   via nmcli. All nodes use a single LNET NIC (single-rail). Update
 #   scripts/gen_inventory.py if you have overridden the LNET address scheme.
 """
 
@@ -59,17 +59,17 @@ def render_inventory(ips):
     return f"""\
 {HEADER}
 [mgmt_servers]
-mgs ansible_host={ips['mgs']} ip_lnet0=192.168.100.9/24 ip_lnet1=192.168.101.9/24 fslabel="MGS" mntpath="mgs"
+mgs ansible_host={ips['mgs']} ip_lnet0=192.168.100.9/24 fslabel="MGS" mntpath="mgs"
 
 [metadata_servers]
-mds1 ansible_host={ips['mds1']} ip_lnet0=192.168.100.11/24 ip_lnet1=192.168.101.11/24 mdt_index=0 fslabel="lustrefs-MDT0000" mntpath="mdt"
-mds2 ansible_host={ips['mds2']} ip_lnet0=192.168.100.13/24 ip_lnet1=192.168.101.13/24 mdt_index=1 fslabel="lustrefs-MDT0001" mntpath="mdt"
+mds1 ansible_host={ips['mds1']} ip_lnet0=192.168.100.11/24 mdt_index=0 fslabel="lustrefs-MDT0000" mntpath="mdt"
+mds2 ansible_host={ips['mds2']} ip_lnet0=192.168.100.13/24 mdt_index=1 fslabel="lustrefs-MDT0001" mntpath="mdt"
 
 [object_servers]
-oss1 ansible_host={ips['oss1']} ip_lnet0=192.168.100.15/24 ip_lnet1=192.168.101.15/24 ost_index=0 fslabel="lustrefs-OST0000" mntpath="ost"
-oss2 ansible_host={ips['oss2']} ip_lnet0=192.168.100.17/24 ip_lnet1=192.168.101.17/24 ost_index=1 fslabel="lustrefs-OST0001" mntpath="ost"
-oss3 ansible_host={ips['oss3']} ip_lnet0=192.168.100.19/24 ip_lnet1=192.168.101.19/24 ost_index=2 fslabel="lustrefs-OST0002" mntpath="ost"
-oss4 ansible_host={ips['oss4']} ip_lnet0=192.168.100.21/24 ip_lnet1=192.168.101.21/24 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
+oss1 ansible_host={ips['oss1']} ip_lnet0=192.168.100.15/24 ost_index=0 fslabel="lustrefs-OST0000" mntpath="ost"
+oss2 ansible_host={ips['oss2']} ip_lnet0=192.168.100.17/24 ost_index=1 fslabel="lustrefs-OST0001" mntpath="ost"
+oss3 ansible_host={ips['oss3']} ip_lnet0=192.168.100.19/24 ost_index=2 fslabel="lustrefs-OST0002" mntpath="ost"
+oss4 ansible_host={ips['oss4']} ip_lnet0=192.168.100.21/24 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
 
 [clients]
 client1 ansible_host={ips['client1']} ip_lnet0=192.168.100.7/24

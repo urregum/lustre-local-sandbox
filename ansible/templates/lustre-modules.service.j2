@@ -6,13 +6,10 @@ Conflicts=shutdown.target
 
 [Service]
 Type=oneshot
-# Bring up LNET interfaces before loading lnet so ksocklnd binds to the
-# correct static IPs. network-online.target fires on eth0/DHCP only;
-# lustre-net0/lustre-net1 (eth1/eth2) may not be configured yet without this.
+# Bring up the LNET interface before loading lnet so ksocklnd binds to the
+# correct static IP. network-online.target fires on eth0/DHCP only;
+# lustre-net0 (eth1) may not be configured yet without this.
 ExecStartPre=/usr/bin/nmcli connection up lustre-net0
-{% if ip_lnet1 is defined %}
-ExecStartPre=/usr/bin/nmcli connection up lustre-net1
-{% endif %}
 ExecStart=/sbin/modprobe lnet
 ExecStart=/sbin/modprobe lustre
 RemainAfterExit=yes

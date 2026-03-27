@@ -22,11 +22,9 @@
         state: present
         autoconnect: true
       loop:
-        - {conn: "lustre-net0", iface: "{{ lnet_iface_0 }}", ip: "{{ ip_lnet0 }}"}  # yamllint disable-line rule:line-length
-        - conn: "lustre-net1"
-          iface: "{{ lnet_iface_1 }}"
-          ip: "{{ ip_lnet1 | default('') }}"
-      when: item.ip != ''
+        - conn: "lustre-net0"
+          iface: "{{ lnet_iface_0 }}"
+          ip: "{{ ip_lnet0 }}"
       register: nm_output
 
     - name: Bring up connections if changed
@@ -66,21 +64,13 @@
       ansible.builtin.command: "lnetctl net add --net tcp --if {{ item }}"
       loop:
         - "{{ lnet_iface_0 }}"
-        - "{{ lnet_iface_1 }}"
-      # Skip lnet_iface_1 on hosts without ip_lnet1 (e.g. single-NIC clients)
-      when:
-        - item not in lnet_show.stdout
-        - item != lnet_iface_1 or ip_lnet1 is defined
+      when: item not in lnet_show.stdout
 
     - name: Ensure Lustre network interfaces persist on boot
       community.general.nmcli:
-        conn_name: "{{ item }}"
+        conn_name: "lustre-net0"
         autoconnect: true
         state: present
-      loop:
-        - "lustre-net0"
-        - "lustre-net1"
-      when: item != 'lustre-net1' or ip_lnet1 is defined
 
     - name: Create Lustre modules systemd service
       ansible.builtin.template:
@@ -97,22 +87,13 @@
         enabled: true
         state: started  # Runs the modprobes immediately if not already loaded
 
-    - name: Ping MGS from all nodes, lnet0
+    - name: Ping MGS from all nodes
       ansible.builtin.command: "lctl ping {{ mgs_lnet0_ip }}@tcp"
       register: ping_result
       until: ping_result.rc == 0
       retries: 18
       delay: 10
       changed_when: false
-
-    - name: Ping MGS from all nodes, lnet1
-      ansible.builtin.command: "lctl ping {{ mgs_lnet1_ip }}@tcp"
-      register: ping_result
-      until: ping_result.rc == 0
-      retries: 18
-      delay: 10
-      changed_when: false
-      when: ip_lnet1 is defined
 
   handlers:
     - name: reload systemd

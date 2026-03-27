@@ -67,9 +67,6 @@ resource "libvirt_domain" "mgs" {
   network_interface {
     network_id = libvirt_network.lustre_lnet0.id
   }
-  network_interface {
-    network_id = libvirt_network.lustre_lnet1.id
-  }
 
   disk {
     volume_id = libvirt_volume.mgs_boot.id
@@ -148,9 +145,6 @@ resource "libvirt_domain" "mds" {
   }
   network_interface {
     network_id = libvirt_network.lustre_lnet0.id
-  }
-  network_interface {
-    network_id = libvirt_network.lustre_lnet1.id
   }
 
   disk {
@@ -231,9 +225,6 @@ resource "libvirt_domain" "oss" {
   network_interface {
     network_id = libvirt_network.lustre_lnet0.id
   }
-  network_interface {
-    network_id = libvirt_network.lustre_lnet1.id
-  }
 
   disk {
     volume_id = libvirt_volume.oss_boot[count.index].id
@@ -297,9 +288,6 @@ resource "libvirt_domain" "client" {
     mode = "host-passthrough"
   }
 
-  # Clients run kmod-lustre-client on the stock kernel, which triggers an
-  # "Export already connecting" Multi-Rail crash when two NIDs attempt
-  # simultaneous connections.  Single lnet0 NIC enforces single-path LNET.
   network_interface {
     network_id = libvirt_network.lustre_mgmt.id
   }

@@ -1,5 +1,3 @@
 ---
-# client1 has no ip_lnet1 in hosts.ini and no lnet1 NIC in Terraform.
-# lnet_networks in group_vars/all.yml automatically produces tcp0(eth1) when
-# ip_lnet1 is undefined, and all lnet1 tasks in lnet_setup.yaml are gated on
-# ip_lnet1 being defined — so no overrides are needed here.
+# No host-specific overrides needed for client1.
+# All nodes in this cluster use a single LNET NIC (lnet0/eth1, single-rail).

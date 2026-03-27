@@ -1,0 +1,1064 @@
+{
+  "version": 4,
+  "terraform_version": "1.14.8",
+  "serial": 280,
+  "lineage": "e061f9ba-4deb-9597-9739-27191c8d6375",
+  "outputs": {
+    "management_ips": {
+      "value": {
+        "client1": "10.0.100.20",
+        "mds1": "10.0.100.11",
+        "mds2": "10.0.100.12",
+        "mgs": "10.0.100.10",
+        "oss1": "10.0.100.13",
+        "oss2": "10.0.100.14",
+        "oss3": "10.0.100.15",
+        "oss4": "10.0.100.16"
+      },
+      "type": [
+        "object",
+        {
+          "client1": "string",
+          "mds1": "string",
+          "mds2": "string",
+          "mgs": "string",
+          "oss1": "string",
+          "oss2": "string",
+          "oss3": "string",
+          "oss4": "string"
+        }
+      ]
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "libvirt_cloudinit_disk",
+      "name": "client",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/var/lib/libvirt/lustre-demo/client1-cloudinit.iso;7aebef9b-6e09-47f0-ac96-bbc5400d3419",
+            "meta_data": "",
+            "name": "client1-cloudinit.iso",
+            "network_config": "version: 2\nethernets:\n  eth0:\n    addresses:\n      - 10.0.100.20/24\n    routes:\n      - to: 0.0.0.0/0\n        via: 10.0.100.1\n    nameservers:\n      addresses:\n        - 8.8.8.8\n        - 8.8.4.4\n",
+            "pool": "lustre-demo",
+            "user_data": "#cloud-config\nhostname: client1\nfqdn: client1.lustre.local\nmanage_etc_hosts: false\n\nusers:\n  - name: ansible\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: wheel\n    shell: /bin/bash\n    lock_passwd: true\n    ssh_authorized_keys:\n      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFEbAEkphV6WYQCk2w0vxDp4dIW+L+fD9WeJT3/JeXE3 curleym@curleym-M5-Ultra\n\nwrite_files:\n  - path: /etc/hosts\n    owner: root:root\n    permissions: '0644'\n    content: |\n      127.0.0.1   localhost localhost.localdomain\n      ::1         localhost localhost.localdomain\n      10.0.100.10     mgs\n      10.0.100.11    mds1\n      10.0.100.12    mds2\n      10.0.100.13    oss1\n      10.0.100.14    oss2\n      10.0.100.15    oss3\n      10.0.100.16    oss4\n      10.0.100.20 client1\n"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_cloudinit_disk",
+      "name": "mds",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "id": "/var/lib/libvirt/lustre-demo/mds1-cloudinit.iso;7961749d-75bf-40e3-b4c9-26488a3d1b22",
+            "meta_data": "",
+            "name": "mds1-cloudinit.iso",
+            "network_config": "version: 2\nethernets:\n  eth0:\n    addresses:\n      - 10.0.100.11/24\n    routes:\n      - to: 0.0.0.0/0\n        via: 10.0.100.1\n    nameservers:\n      addresses:\n        - 8.8.8.8\n        - 8.8.4.4\n",
+            "pool": "lustre-demo",
+            "user_data": "#cloud-config\nhostname: mds1\nfqdn: mds1.lustre.local\nmanage_etc_hosts: false\n\nusers:\n  - name: ansible\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: wheel\n    shell: /bin/bash\n    lock_passwd: true\n    ssh_authorized_keys:\n      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFEbAEkphV6WYQCk2w0vxDp4dIW+L+fD9WeJT3/JeXE3 curleym@curleym-M5-Ultra\n\nwrite_files:\n  - path: /etc/hosts\n    owner: root:root\n    permissions: '0644'\n    content: |\n      127.0.0.1   localhost localhost.localdomain\n      ::1         localhost localhost.localdomain\n      10.0.100.10     mgs\n      10.0.100.11    mds1\n      10.0.100.12    mds2\n      10.0.100.13    oss1\n      10.0.100.14    oss2\n      10.0.100.15    oss3\n      10.0.100.16    oss4\n      10.0.100.20 client1\n"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        },
+        {
+          "index_key": 1,
+          "schema_version": 0,
+          "attributes": {
+            "id": "/var/lib/libvirt/lustre-demo/mds2-cloudinit.iso;5ebff465-dcfd-4227-8d55-d7f473653e42",
+            "meta_data": "",
+            "name": "mds2-cloudinit.iso",
+            "network_config": "version: 2\nethernets:\n  eth0:\n    addresses:\n      - 10.0.100.12/24\n    routes:\n      - to: 0.0.0.0/0\n        via: 10.0.100.1\n    nameservers:\n      addresses:\n        - 8.8.8.8\n        - 8.8.4.4\n",
+            "pool": "lustre-demo",
+            "user_data": "#cloud-config\nhostname: mds2\nfqdn: mds2.lustre.local\nmanage_etc_hosts: false\n\nusers:\n  - name: ansible\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: wheel\n    shell: /bin/bash\n    lock_passwd: true\n    ssh_authorized_keys:\n      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFEbAEkphV6WYQCk2w0vxDp4dIW+L+fD9WeJT3/JeXE3 curleym@curleym-M5-Ultra\n\nwrite_files:\n  - path: /etc/hosts\n    owner: root:root\n    permissions: '0644'\n    content: |\n      127.0.0.1   localhost localhost.localdomain\n      ::1         localhost localhost.localdomain\n      10.0.100.10     mgs\n      10.0.100.11    mds1\n      10.0.100.12    mds2\n      10.0.100.13    oss1\n      10.0.100.14    oss2\n      10.0.100.15    oss3\n      10.0.100.16    oss4\n      10.0.100.20 client1\n"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_cloudinit_disk",
+      "name": "mgs",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/var/lib/libvirt/lustre-demo/mgs-cloudinit.iso;74eb4c41-42dc-4ae1-879c-ee91d27c39b4",
+            "meta_data": "",
+            "name": "mgs-cloudinit.iso",
+            "network_config": "version: 2\nethernets:\n  eth0:\n    addresses:\n      - 10.0.100.10/24\n    routes:\n      - to: 0.0.0.0/0\n        via: 10.0.100.1\n    nameservers:\n      addresses:\n        - 8.8.8.8\n        - 8.8.4.4\n",
+            "pool": "lustre-demo",
+            "user_data": "#cloud-config\nhostname: mgs\nfqdn: mgs.lustre.local\nmanage_etc_hosts: false\n\nusers:\n  - name: ansible\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: wheel\n    shell: /bin/bash\n    lock_passwd: true\n    ssh_authorized_keys:\n      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFEbAEkphV6WYQCk2w0vxDp4dIW+L+fD9WeJT3/JeXE3 curleym@curleym-M5-Ultra\n\nwrite_files:\n  - path: /etc/hosts\n    owner: root:root\n    permissions: '0644'\n    content: |\n      127.0.0.1   localhost localhost.localdomain\n      ::1         localhost localhost.localdomain\n      10.0.100.10     mgs\n      10.0.100.11    mds1\n      10.0.100.12    mds2\n      10.0.100.13    oss1\n      10.0.100.14    oss2\n      10.0.100.15    oss3\n      10.0.100.16    oss4\n      10.0.100.20 client1\n"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_cloudinit_disk",
+      "name": "oss",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "id": "/var/lib/libvirt/lustre-demo/oss1-cloudinit.iso;830034f1-92c3-4f7d-a262-d3e0c63f2ff8",
+            "meta_data": "",
+            "name": "oss1-cloudinit.iso",
+            "network_config": "version: 2\nethernets:\n  eth0:\n    addresses:\n      - 10.0.100.13/24\n    routes:\n      - to: 0.0.0.0/0\n        via: 10.0.100.1\n    nameservers:\n      addresses:\n        - 8.8.8.8\n        - 8.8.4.4\n",
+            "pool": "lustre-demo",
+            "user_data": "#cloud-config\nhostname: oss1\nfqdn: oss1.lustre.local\nmanage_etc_hosts: false\n\nusers:\n  - name: ansible\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: wheel\n    shell: /bin/bash\n    lock_passwd: true\n    ssh_authorized_keys:\n      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFEbAEkphV6WYQCk2w0vxDp4dIW+L+fD9WeJT3/JeXE3 curleym@curleym-M5-Ultra\n\nwrite_files:\n  - path: /etc/hosts\n    owner: root:root\n    permissions: '0644'\n    content: |\n      127.0.0.1   localhost localhost.localdomain\n      ::1         localhost localhost.localdomain\n      10.0.100.10     mgs\n      10.0.100.11    mds1\n      10.0.100.12    mds2\n      10.0.100.13    oss1\n      10.0.100.14    oss2\n      10.0.100.15    oss3\n      10.0.100.16    oss4\n      10.0.100.20 client1\n"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        },
+        {
+          "index_key": 1,
+          "schema_version": 0,
+          "attributes": {
+            "id": "/var/lib/libvirt/lustre-demo/oss2-cloudinit.iso;438a6d40-700a-4505-813f-28f1f2f79684",
+            "meta_data": "",
+            "name": "oss2-cloudinit.iso",
+            "network_config": "version: 2\nethernets:\n  eth0:\n    addresses:\n      - 10.0.100.14/24\n    routes:\n      - to: 0.0.0.0/0\n        via: 10.0.100.1\n    nameservers:\n      addresses:\n        - 8.8.8.8\n        - 8.8.4.4\n",
+            "pool": "lustre-demo",
+            "user_data": "#cloud-config\nhostname: oss2\nfqdn: oss2.lustre.local\nmanage_etc_hosts: false\n\nusers:\n  - name: ansible\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: wheel\n    shell: /bin/bash\n    lock_passwd: true\n    ssh_authorized_keys:\n      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFEbAEkphV6WYQCk2w0vxDp4dIW+L+fD9WeJT3/JeXE3 curleym@curleym-M5-Ultra\n\nwrite_files:\n  - path: /etc/hosts\n    owner: root:root\n    permissions: '0644'\n    content: |\n      127.0.0.1   localhost localhost.localdomain\n      ::1         localhost localhost.localdomain\n      10.0.100.10     mgs\n      10.0.100.11    mds1\n      10.0.100.12    mds2\n      10.0.100.13    oss1\n      10.0.100.14    oss2\n      10.0.100.15    oss3\n      10.0.100.16    oss4\n      10.0.100.20 client1\n"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        },
+        {
+          "index_key": 2,
+          "schema_version": 0,
+          "attributes": {
+            "id": "/var/lib/libvirt/lustre-demo/oss3-cloudinit.iso;7df9538e-e073-45aa-9276-3ac0b9b6666e",
+            "meta_data": "",
+            "name": "oss3-cloudinit.iso",
+            "network_config": "version: 2\nethernets:\n  eth0:\n    addresses:\n      - 10.0.100.15/24\n    routes:\n      - to: 0.0.0.0/0\n        via: 10.0.100.1\n    nameservers:\n      addresses:\n        - 8.8.8.8\n        - 8.8.4.4\n",
+            "pool": "lustre-demo",
+            "user_data": "#cloud-config\nhostname: oss3\nfqdn: oss3.lustre.local\nmanage_etc_hosts: false\n\nusers:\n  - name: ansible\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: wheel\n    shell: /bin/bash\n    lock_passwd: true\n    ssh_authorized_keys:\n      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFEbAEkphV6WYQCk2w0vxDp4dIW+L+fD9WeJT3/JeXE3 curleym@curleym-M5-Ultra\n\nwrite_files:\n  - path: /etc/hosts\n    owner: root:root\n    permissions: '0644'\n    content: |\n      127.0.0.1   localhost localhost.localdomain\n      ::1         localhost localhost.localdomain\n      10.0.100.10     mgs\n      10.0.100.11    mds1\n      10.0.100.12    mds2\n      10.0.100.13    oss1\n      10.0.100.14    oss2\n      10.0.100.15    oss3\n      10.0.100.16    oss4\n      10.0.100.20 client1\n"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        },
+        {
+          "index_key": 3,
+          "schema_version": 0,
+          "attributes": {
+            "id": "/var/lib/libvirt/lustre-demo/oss4-cloudinit.iso;b1917421-eece-4c62-898a-6076f2a67d09",
+            "meta_data": "",
+            "name": "oss4-cloudinit.iso",
+            "network_config": "version: 2\nethernets:\n  eth0:\n    addresses:\n      - 10.0.100.16/24\n    routes:\n      - to: 0.0.0.0/0\n        via: 10.0.100.1\n    nameservers:\n      addresses:\n        - 8.8.8.8\n        - 8.8.4.4\n",
+            "pool": "lustre-demo",
+            "user_data": "#cloud-config\nhostname: oss4\nfqdn: oss4.lustre.local\nmanage_etc_hosts: false\n\nusers:\n  - name: ansible\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: wheel\n    shell: /bin/bash\n    lock_passwd: true\n    ssh_authorized_keys:\n      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFEbAEkphV6WYQCk2w0vxDp4dIW+L+fD9WeJT3/JeXE3 curleym@curleym-M5-Ultra\n\nwrite_files:\n  - path: /etc/hosts\n    owner: root:root\n    permissions: '0644'\n    content: |\n      127.0.0.1   localhost localhost.localdomain\n      ::1         localhost localhost.localdomain\n      10.0.100.10     mgs\n      10.0.100.11    mds1\n      10.0.100.12    mds2\n      10.0.100.13    oss1\n      10.0.100.14    oss2\n      10.0.100.15    oss3\n      10.0.100.16    oss4\n      10.0.100.20 client1\n"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_domain",
+      "name": "oss",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "arch": "x86_64",
+            "autostart": false,
+            "boot_device": [
+              {
+                "dev": [
+                  "hd"
+                ]
+              }
+            ],
+            "cloudinit": "/var/lib/libvirt/lustre-demo/oss1-cloudinit.iso;830034f1-92c3-4f7d-a262-d3e0c63f2ff8",
+            "cmdline": [],
+            "console": [
+              {
+                "source_host": "127.0.0.1",
+                "source_path": "",
+                "source_service": "0",
+                "target_port": "0",
+                "target_type": "serial",
+                "type": "pty"
+              }
+            ],
+            "coreos_ignition": null,
+            "cpu": [
+              {
+                "mode": "host-passthrough"
+              }
+            ],
+            "description": "",
+            "disk": [
+              {
+                "block_device": "",
+                "file": "",
+                "scsi": false,
+                "url": "",
+                "volume_id": "/var/lib/libvirt/lustre-demo/oss1-boot.qcow2",
+                "wwn": ""
+              },
+              {
+                "block_device": "",
+                "file": "",
+                "scsi": false,
+                "url": "",
+                "volume_id": "/var/lib/libvirt/lustre-demo/oss1-data.qcow2",
+                "wwn": ""
+              }
+            ],
+            "emulator": "/usr/bin/qemu-system-x86_64",
+            "filesystem": [],
+            "firmware": null,
+            "fw_cfg_name": "opt/com.coreos/config",
+            "graphics": [
+              {
+                "autoport": true,
+                "listen_address": "127.0.0.1",
+                "listen_type": "address",
+                "type": "vnc",
+                "websocket": 0
+              }
+            ],
+            "id": "70e0675e-37d6-46ea-b670-262a22eb6262",
+            "initrd": "",
+            "kernel": "",
+            "machine": "ubuntu",
+            "memory": 2048,
+            "metadata": null,
+            "name": "oss1",
+            "network_interface": [
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:D2:C6:8D",
+                "macvtap": "",
+                "network_id": "cbfa6173-b5b2-42a9-bca4-6201f1201764",
+                "network_name": "lustre-mgmt",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              },
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:92:15:8C",
+                "macvtap": "",
+                "network_id": "2d7e151d-8e8e-48f1-964d-f37b35ec9473",
+                "network_name": "lustre-lnet0",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              },
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:66:BB:D9",
+                "macvtap": "",
+                "network_id": "6957aeab-2b88-4ccd-87c7-6b1e2d5a2713",
+                "network_name": "lustre-lnet1",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              }
+            ],
+            "nvram": [],
+            "qemu_agent": false,
+            "running": true,
+            "timeouts": null,
+            "tpm": [],
+            "type": "kvm",
+            "vcpu": 2,
+            "video": [],
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "libvirt_cloudinit_disk.oss",
+            "libvirt_network.lustre_lnet0",
+            "libvirt_network.lustre_lnet1",
+            "libvirt_network.lustre_mgmt",
+            "libvirt_pool.lustre_demo",
+            "libvirt_volume.oss_boot",
+            "libvirt_volume.oss_data",
+            "libvirt_volume.rocky_base"
+          ]
+        },
+        {
+          "index_key": 1,
+          "schema_version": 0,
+          "attributes": {
+            "arch": "x86_64",
+            "autostart": false,
+            "boot_device": [
+              {
+                "dev": [
+                  "hd"
+                ]
+              }
+            ],
+            "cloudinit": "/var/lib/libvirt/lustre-demo/oss2-cloudinit.iso;438a6d40-700a-4505-813f-28f1f2f79684",
+            "cmdline": [],
+            "console": [
+              {
+                "source_host": "127.0.0.1",
+                "source_path": "",
+                "source_service": "0",
+                "target_port": "0",
+                "target_type": "serial",
+                "type": "pty"
+              }
+            ],
+            "coreos_ignition": null,
+            "cpu": [
+              {
+                "mode": "host-passthrough"
+              }
+            ],
+            "description": "",
+            "disk": [
+              {
+                "block_device": "",
+                "file": "",
+                "scsi": false,
+                "url": "",
+                "volume_id": "/var/lib/libvirt/lustre-demo/oss2-boot.qcow2",
+                "wwn": ""
+              },
+              {
+                "block_device": "",
+                "file": "",
+                "scsi": false,
+                "url": "",
+                "volume_id": "/var/lib/libvirt/lustre-demo/oss2-data.qcow2",
+                "wwn": ""
+              }
+            ],
+            "emulator": "/usr/bin/qemu-system-x86_64",
+            "filesystem": [],
+            "firmware": null,
+            "fw_cfg_name": "opt/com.coreos/config",
+            "graphics": [
+              {
+                "autoport": true,
+                "listen_address": "127.0.0.1",
+                "listen_type": "address",
+                "type": "vnc",
+                "websocket": 0
+              }
+            ],
+            "id": "fd059622-327c-4daf-a076-fd576a70d481",
+            "initrd": "",
+            "kernel": "",
+            "machine": "ubuntu",
+            "memory": 2048,
+            "metadata": null,
+            "name": "oss2",
+            "network_interface": [
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:36:71:3F",
+                "macvtap": "",
+                "network_id": "cbfa6173-b5b2-42a9-bca4-6201f1201764",
+                "network_name": "lustre-mgmt",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              },
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:BE:08:C1",
+                "macvtap": "",
+                "network_id": "2d7e151d-8e8e-48f1-964d-f37b35ec9473",
+                "network_name": "lustre-lnet0",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              },
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:12:9E:DB",
+                "macvtap": "",
+                "network_id": "6957aeab-2b88-4ccd-87c7-6b1e2d5a2713",
+                "network_name": "lustre-lnet1",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              }
+            ],
+            "nvram": [],
+            "qemu_agent": false,
+            "running": true,
+            "timeouts": null,
+            "tpm": [],
+            "type": "kvm",
+            "vcpu": 2,
+            "video": [],
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "libvirt_cloudinit_disk.oss",
+            "libvirt_network.lustre_lnet0",
+            "libvirt_network.lustre_lnet1",
+            "libvirt_network.lustre_mgmt",
+            "libvirt_pool.lustre_demo",
+            "libvirt_volume.oss_boot",
+            "libvirt_volume.oss_data",
+            "libvirt_volume.rocky_base"
+          ]
+        },
+        {
+          "index_key": 2,
+          "schema_version": 0,
+          "attributes": {
+            "arch": "x86_64",
+            "autostart": false,
+            "boot_device": [
+              {
+                "dev": [
+                  "hd"
+                ]
+              }
+            ],
+            "cloudinit": "/var/lib/libvirt/lustre-demo/oss3-cloudinit.iso;7df9538e-e073-45aa-9276-3ac0b9b6666e",
+            "cmdline": [],
+            "console": [
+              {
+                "source_host": "127.0.0.1",
+                "source_path": "",
+                "source_service": "0",
+                "target_port": "0",
+                "target_type": "serial",
+                "type": "pty"
+              }
+            ],
+            "coreos_ignition": null,
+            "cpu": [
+              {
+                "mode": "host-passthrough"
+              }
+            ],
+            "description": "",
+            "disk": [
+              {
+                "block_device": "",
+                "file": "",
+                "scsi": false,
+                "url": "",
+                "volume_id": "/var/lib/libvirt/lustre-demo/oss3-boot.qcow2",
+                "wwn": ""
+              },
+              {
+                "block_device": "",
+                "file": "",
+                "scsi": false,
+                "url": "",
+                "volume_id": "/var/lib/libvirt/lustre-demo/oss3-data.qcow2",
+                "wwn": ""
+              }
+            ],
+            "emulator": "/usr/bin/qemu-system-x86_64",
+            "filesystem": [],
+            "firmware": null,
+            "fw_cfg_name": "opt/com.coreos/config",
+            "graphics": [
+              {
+                "autoport": true,
+                "listen_address": "127.0.0.1",
+                "listen_type": "address",
+                "type": "vnc",
+                "websocket": 0
+              }
+            ],
+            "id": "6d3e67e0-d218-4f21-a3c3-fb49a9a4c530",
+            "initrd": "",
+            "kernel": "",
+            "machine": "ubuntu",
+            "memory": 2048,
+            "metadata": null,
+            "name": "oss3",
+            "network_interface": [
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:E6:80:F0",
+                "macvtap": "",
+                "network_id": "cbfa6173-b5b2-42a9-bca4-6201f1201764",
+                "network_name": "lustre-mgmt",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              },
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:66:9D:42",
+                "macvtap": "",
+                "network_id": "2d7e151d-8e8e-48f1-964d-f37b35ec9473",
+                "network_name": "lustre-lnet0",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              },
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:BA:E2:88",
+                "macvtap": "",
+                "network_id": "6957aeab-2b88-4ccd-87c7-6b1e2d5a2713",
+                "network_name": "lustre-lnet1",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              }
+            ],
+            "nvram": [],
+            "qemu_agent": false,
+            "running": true,
+            "timeouts": null,
+            "tpm": [],
+            "type": "kvm",
+            "vcpu": 2,
+            "video": [],
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "libvirt_cloudinit_disk.oss",
+            "libvirt_network.lustre_lnet0",
+            "libvirt_network.lustre_lnet1",
+            "libvirt_network.lustre_mgmt",
+            "libvirt_pool.lustre_demo",
+            "libvirt_volume.oss_boot",
+            "libvirt_volume.oss_data",
+            "libvirt_volume.rocky_base"
+          ]
+        },
+        {
+          "index_key": 3,
+          "schema_version": 0,
+          "attributes": {
+            "arch": "x86_64",
+            "autostart": false,
+            "boot_device": [
+              {
+                "dev": [
+                  "hd"
+                ]
+              }
+            ],
+            "cloudinit": "/var/lib/libvirt/lustre-demo/oss4-cloudinit.iso;b1917421-eece-4c62-898a-6076f2a67d09",
+            "cmdline": [],
+            "console": [
+              {
+                "source_host": "127.0.0.1",
+                "source_path": "",
+                "source_service": "0",
+                "target_port": "0",
+                "target_type": "serial",
+                "type": "pty"
+              }
+            ],
+            "coreos_ignition": null,
+            "cpu": [
+              {
+                "mode": "host-passthrough"
+              }
+            ],
+            "description": "",
+            "disk": [
+              {
+                "block_device": "",
+                "file": "",
+                "scsi": false,
+                "url": "",
+                "volume_id": "/var/lib/libvirt/lustre-demo/oss4-boot.qcow2",
+                "wwn": ""
+              },
+              {
+                "block_device": "",
+                "file": "",
+                "scsi": false,
+                "url": "",
+                "volume_id": "/var/lib/libvirt/lustre-demo/oss4-data.qcow2",
+                "wwn": ""
+              }
+            ],
+            "emulator": "/usr/bin/qemu-system-x86_64",
+            "filesystem": [],
+            "firmware": null,
+            "fw_cfg_name": "opt/com.coreos/config",
+            "graphics": [
+              {
+                "autoport": true,
+                "listen_address": "127.0.0.1",
+                "listen_type": "address",
+                "type": "vnc",
+                "websocket": 0
+              }
+            ],
+            "id": "4242cbb7-72a4-4b11-ac32-affb9ef74403",
+            "initrd": "",
+            "kernel": "",
+            "machine": "ubuntu",
+            "memory": 2048,
+            "metadata": null,
+            "name": "oss4",
+            "network_interface": [
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:F2:E7:7F",
+                "macvtap": "",
+                "network_id": "cbfa6173-b5b2-42a9-bca4-6201f1201764",
+                "network_name": "lustre-mgmt",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              },
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:E6:AC:43",
+                "macvtap": "",
+                "network_id": "2d7e151d-8e8e-48f1-964d-f37b35ec9473",
+                "network_name": "lustre-lnet0",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              },
+              {
+                "addresses": [],
+                "bridge": "",
+                "hostname": "",
+                "mac": "52:54:00:8A:D4:86",
+                "macvtap": "",
+                "network_id": "6957aeab-2b88-4ccd-87c7-6b1e2d5a2713",
+                "network_name": "lustre-lnet1",
+                "passthrough": "",
+                "vepa": "",
+                "wait_for_lease": false
+              }
+            ],
+            "nvram": [],
+            "qemu_agent": false,
+            "running": true,
+            "timeouts": null,
+            "tpm": [],
+            "type": "kvm",
+            "vcpu": 2,
+            "video": [],
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "libvirt_cloudinit_disk.oss",
+            "libvirt_network.lustre_lnet0",
+            "libvirt_network.lustre_lnet1",
+            "libvirt_network.lustre_mgmt",
+            "libvirt_pool.lustre_demo",
+            "libvirt_volume.oss_boot",
+            "libvirt_volume.oss_data",
+            "libvirt_volume.rocky_base"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_network",
+      "name": "lustre_lnet0",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "addresses": null,
+            "autostart": true,
+            "bridge": "virbr2",
+            "dhcp": [],
+            "dns": [
+              {
+                "enabled": false,
+                "forwarders": [],
+                "hosts": [],
+                "local_only": false,
+                "srvs": []
+              }
+            ],
+            "dnsmasq_options": [],
+            "domain": null,
+            "id": "2d7e151d-8e8e-48f1-964d-f37b35ec9473",
+            "mode": "none",
+            "mtu": null,
+            "name": "lustre-lnet0",
+            "routes": [],
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_network",
+      "name": "lustre_lnet1",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "addresses": null,
+            "autostart": true,
+            "bridge": "virbr1",
+            "dhcp": [],
+            "dns": [
+              {
+                "enabled": false,
+                "forwarders": [],
+                "hosts": [],
+                "local_only": false,
+                "srvs": []
+              }
+            ],
+            "dnsmasq_options": [],
+            "domain": null,
+            "id": "6957aeab-2b88-4ccd-87c7-6b1e2d5a2713",
+            "mode": "none",
+            "mtu": null,
+            "name": "lustre-lnet1",
+            "routes": [],
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_network",
+      "name": "lustre_mgmt",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "addresses": [
+              "10.0.100.0/24"
+            ],
+            "autostart": true,
+            "bridge": "virbr3",
+            "dhcp": [
+              {
+                "enabled": true
+              }
+            ],
+            "dns": [
+              {
+                "enabled": true,
+                "forwarders": [],
+                "hosts": [],
+                "local_only": false,
+                "srvs": []
+              }
+            ],
+            "dnsmasq_options": [],
+            "domain": null,
+            "id": "cbfa6173-b5b2-42a9-bca4-6201f1201764",
+            "mode": "nat",
+            "mtu": null,
+            "name": "lustre-mgmt",
+            "routes": [],
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_pool",
+      "name": "lustre_demo",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "allocation": 150437642240,
+            "available": 351954968576,
+            "capacity": 502392610816,
+            "id": "be8ec7e0-9bd3-44d9-bb51-3536deb3d009",
+            "name": "lustre-demo",
+            "path": "/var/lib/libvirt/lustre-demo",
+            "type": "dir",
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_volume",
+      "name": "mds_data",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "base_volume_id": null,
+            "base_volume_name": null,
+            "base_volume_pool": null,
+            "format": "qcow2",
+            "id": "/var/lib/libvirt/lustre-demo/mds1-data.qcow2",
+            "name": "mds1-data.qcow2",
+            "pool": "lustre-demo",
+            "size": 5368709120,
+            "source": null,
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        },
+        {
+          "index_key": 1,
+          "schema_version": 0,
+          "attributes": {
+            "base_volume_id": null,
+            "base_volume_name": null,
+            "base_volume_pool": null,
+            "format": "qcow2",
+            "id": "/var/lib/libvirt/lustre-demo/mds2-data.qcow2",
+            "name": "mds2-data.qcow2",
+            "pool": "lustre-demo",
+            "size": 5368709120,
+            "source": null,
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_volume",
+      "name": "mgs_data",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "base_volume_id": null,
+            "base_volume_name": null,
+            "base_volume_pool": null,
+            "format": "qcow2",
+            "id": "/var/lib/libvirt/lustre-demo/mgs-data.qcow2",
+            "name": "mgs-data.qcow2",
+            "pool": "lustre-demo",
+            "size": 5368709120,
+            "source": null,
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "libvirt_volume",
+      "name": "oss_data",
+      "provider": "provider[\"registry.terraform.io/dmacvicar/libvirt\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "base_volume_id": null,
+            "base_volume_name": null,
+            "base_volume_pool": null,
+            "format": "qcow2",
+            "id": "/var/lib/libvirt/lustre-demo/oss1-data.qcow2",
+            "name": "oss1-data.qcow2",
+            "pool": "lustre-demo",
+            "size": 5368709120,
+            "source": null,
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        },
+        {
+          "index_key": 1,
+          "schema_version": 0,
+          "attributes": {
+            "base_volume_id": null,
+            "base_volume_name": null,
+            "base_volume_pool": null,
+            "format": "qcow2",
+            "id": "/var/lib/libvirt/lustre-demo/oss2-data.qcow2",
+            "name": "oss2-data.qcow2",
+            "pool": "lustre-demo",
+            "size": 5368709120,
+            "source": null,
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        },
+        {
+          "index_key": 2,
+          "schema_version": 0,
+          "attributes": {
+            "base_volume_id": null,
+            "base_volume_name": null,
+            "base_volume_pool": null,
+            "format": "qcow2",
+            "id": "/var/lib/libvirt/lustre-demo/oss3-data.qcow2",
+            "name": "oss3-data.qcow2",
+            "pool": "lustre-demo",
+            "size": 5368709120,
+            "source": null,
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        },
+        {
+          "index_key": 3,
+          "schema_version": 0,
+          "attributes": {
+            "base_volume_id": null,
+            "base_volume_name": null,
+            "base_volume_pool": null,
+            "format": "qcow2",
+            "id": "/var/lib/libvirt/lustre-demo/oss4-data.qcow2",
+            "name": "oss4-data.qcow2",
+            "pool": "lustre-demo",
+            "size": 5368709120,
+            "source": null,
+            "xml": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "libvirt_pool.lustre_demo"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
