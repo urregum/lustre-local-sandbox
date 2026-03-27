@@ -68,6 +68,15 @@ at 1.0. Direct push to main is acceptable for now.
 
 ### ~~Inventory management~~ — resolved in scripts/gen_inventory.py
 
+### Provision gate — site.yaml wrapper
+**Status:** Partially addressed — `wait_for_hosts.yaml` exists and must be run
+manually between `gen_inventory.py` and `lnet_setup.yaml`. This is documented
+but relies on operator discipline.
+**Intended fix:** Add a `site.yaml` that runs the full provision sequence
+(`wait_for_hosts` → `lnet_setup` → `server_stg_setup` → `client_setup`) with
+the gate built in, so a single `ansible-playbook site.yaml` replaces the
+four-step manual sequence.
+
 ### /etc/hosts population on KVM host
 **Status:** Deferred — manual workaround in place.
 **Intended fix:** Add a post-`terraform apply` step (script or Ansible local task)

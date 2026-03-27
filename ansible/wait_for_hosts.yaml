@@ -1,0 +1,17 @@
+---
+# Waits for all cluster VMs to be SSH-reachable and cloud-init complete.
+# Run this after `terraform apply` and `gen_inventory.py`, before any
+# other playbooks. Prevents Ansible connection errors on freshly booted VMs.
+
+- name: Wait for cluster hosts to become reachable
+  hosts: lustre_cluster
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH to become available
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+
+    - name: Wait for cloud-init to finish
+      ansible.builtin.command: cloud-init status --wait
+      changed_when: false
+...
