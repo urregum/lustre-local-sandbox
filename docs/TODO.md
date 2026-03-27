@@ -130,6 +130,18 @@ block devices are present on server VMs (`/dev/vdb`), and LNET network
 interfaces exist. Could live in `gen_inventory.py`, a separate script, or
 a dedicated preflight play.
 
+### Cross-platform host validation — required before 1.0
+**Status:** Deferred to pre-1.0 — currently only validated on Linux Mint 22
+(noted in README.md). KVM/libvirt behavior, Python toolchain availability,
+Terraform provider compatibility, and nmcli behavior may differ across host
+distros and versions.
+**Intended fix:** Validate a full L3 rebuild on at least one additional host
+OS (e.g., Ubuntu 24.04 LTS or Fedora current) before cutting 1.0. Document
+any host-side prerequisites or workarounds surfaced during the process.
+Areas most likely to be fragile: libvirt/QEMU version differences affecting
+Terraform provider behavior, Python version availability for the venv, and
+package names in host prerequisites.
+
 ### L1 and L2 teardown — needs focused testing
 **Status:** Deferred — L3 (full destroy + rebuild) has been exercised
 extensively. L1 (graceful unmount) and L2 (block device wipe) have not been
