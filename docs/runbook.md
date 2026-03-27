@@ -130,6 +130,48 @@ At this point, the system is ready for sandbox experimentation!
 
 ---
 
+## Scaling the Client Pool
+
+The default topology provisions one client. Adding a second client (`client2`)
+requires changes to four files:
+
+**1. `terraform/variables.tf`** — extend the `mgmt_ips` object type and default:
+```hcl
+# In the type block:
+client2 = string
+# In the default block:
+client2 = "10.0.100.21"
+```
+
+**2. `terraform/vms.tf`** — copy all three `client1` resource blocks
+(`libvirt_volume`, `libvirt_cloudinit_disk`, `libvirt_domain`), rename each
+to `client2`, and update internal references to `client1` → `client2`.
+
+**3. `terraform/outputs.tf`** — add to the `management_ips` output:
+```hcl
+client2 = var.mgmt_ips.client2
+```
+
+**4. `scripts/gen_inventory.py`** — add a `client2` line to the `[clients]`
+section in `render_inventory()`, following the `client1` pattern.
+
+Then re-provision and configure:
+```bash
+cd terraform/ && terraform apply
+cd .. && python3 scripts/gen_inventory.py
+cd ansible/ && ansible-playbook -i hosts.ini client_setup.yaml
+```
+
+The MPI hosts file (`~/mpi_hostfile`) is generated from the `[clients]` inventory
+group and will include `client2` automatically after re-running `client_setup.yaml`.
+
+> **Note:** Running IOR across multiple clients with `mpirun` requires passwordless
+> SSH between client nodes. This is not configured by the current playbooks — only
+> the KVM host key is injected via cloud-init. Distribute a shared SSH keypair
+> among clients before attempting multi-node MPI runs.
+
+---
+
 ## Phase 4 — Teardown
 
 See [teardown/README.md](../teardown/README.md) for L1 (graceful unmount),

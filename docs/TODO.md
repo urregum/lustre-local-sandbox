@@ -99,17 +99,6 @@ recovery window.
 that writes cluster hostnames and management IPs to `/etc/hosts` on the KVM host,
 making `ssh ansible@mgs` etc. work without looking up IPs.
 
-### IOR benchmark — drop_caches and direct I/O notes
-**Status:** Deferred — not part of provisioning automation.
-**Intended fix:** Document in runbook that meaningful IOR read benchmarks
-require (a) `echo 3 > /proc/sys/vm/drop_caches` on all OSS nodes and the
-client immediately before the read pass, and (b) `-O useO_DIRECT=1` to bypass
-the Lustre client extent cache. Without both, reads reflect local cache speed
-rather than OST throughput. Note that with a single client node, `-C`
-(constant task offset) does not prevent same-node page cache hits.
+### ~~IOR benchmark — drop_caches and direct I/O notes~~ — resolved, see runbook Phase 3
 
-### Client pool scaling documentation
-**Status:** Deferred — current topology is fixed at one client.
-**Intended fix:** Document in runbook how to add client VMs: bump `client.count`
-(or add `client2`/`client3` entries to `mgmt_ips`), re-run `terraform apply`, and
-re-run `gen_inventory.py` + the client Ansible plays against the new hosts.
+### ~~Client pool scaling documentation~~ — resolved, see runbook "Scaling the Client Pool"
