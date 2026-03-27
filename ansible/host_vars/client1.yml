@@ -1,7 +1,5 @@
 ---
-# kmod-lustre-client on the stock Rocky kernel triggers an "Export already
-# connecting" Multi-Rail collision when both NIDs attempt simultaneous
-# connections to the MGS. Restrict the client to lnet0 (eth1) only.
-# eth2 is still configured by NetworkManager (lustre-net1 connection) for
-# consistency, but lnet does not add it as an NI.
-lnet_networks: "tcp0({{ lnet_iface_0 }})"
+# client1 has no ip_lnet1 in hosts.ini and no lnet1 NIC in Terraform.
+# lnet_networks in group_vars/all.yml automatically produces tcp0(eth1) when
+# ip_lnet1 is undefined, and all lnet1 tasks in lnet_setup.yaml are gated on
+# ip_lnet1 being defined — so no overrides are needed here.

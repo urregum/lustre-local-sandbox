@@ -22,7 +22,10 @@
         autoconnect: true
       loop:
         - {conn: "lustre-net0", iface: "{{ lnet_iface_0 }}", ip: "{{ ip_lnet0 }}"}  # yamllint disable-line rule:line-length
-        - {conn: "lustre-net1", iface: "{{ lnet_iface_1 }}", ip: "{{ ip_lnet1 }}"}  # yamllint disable-line rule:line-length
+        - conn: "lustre-net1"
+          iface: "{{ lnet_iface_1 }}"
+          ip: "{{ ip_lnet1 | default('') }}"
+      when: item.ip != ''
       register: nm_output
 
     - name: Bring up connections if changed
@@ -63,8 +66,10 @@
       loop:
         - "{{ lnet_iface_0 }}"
         - "{{ lnet_iface_1 }}"
-      # Only run if the interface isn't already in the 'net show' output
-      when: item not in lnet_show.stdout
+      # Skip lnet_iface_1 on hosts without ip_lnet1 (e.g. single-NIC clients)
+      when:
+        - item not in lnet_show.stdout
+        - item != lnet_iface_1 or ip_lnet1 is defined
 
     - name: Ensure Lustre network interfaces persist on boot
       community.general.nmcli:
@@ -74,6 +79,7 @@
       loop:
         - "lustre-net0"
         - "lustre-net1"
+      when: item != 'lustre-net1' or ip_lnet1 is defined
 
     - name: Create Lustre modules systemd service
       ansible.builtin.template:
@@ -99,6 +105,7 @@
       ansible.builtin.command: "lctl ping {{ mgs_lnet1_ip }}@tcp"
       register: ping_result
       changed_when: false
+      when: ip_lnet1 is defined
 
   handlers:
     - name: reload systemd

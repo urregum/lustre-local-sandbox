@@ -72,7 +72,7 @@ oss3 ansible_host={ips['oss3']} ip_lnet0=192.168.100.19/24 ip_lnet1=192.168.101.
 oss4 ansible_host={ips['oss4']} ip_lnet0=192.168.100.21/24 ip_lnet1=192.168.101.21/24 ost_index=3 fslabel="lustrefs-OST0003" mntpath="ost"
 
 [clients]
-client1 ansible_host={ips['client1']} ip_lnet0=192.168.100.7/24 ip_lnet1=192.168.101.7/24
+client1 ansible_host={ips['client1']} ip_lnet0=192.168.100.7/24
 
 [servers:children]
 mgmt_servers

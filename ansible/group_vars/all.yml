@@ -35,8 +35,6 @@ lnet_iface_0: eth1
 lnet_iface_1: eth2
 
 # LNET networks string written to /etc/modprobe.d/lnet.conf.
-# Servers use both interfaces for dual-rail; clients use lnet0 only.
-# kmod-lustre-client on stock kernel triggers "Export already connecting"
-# when Multi-Rail attempts simultaneous connections from two NIDs.
-# Override per-host in host_vars/ if needed.
-lnet_networks: "tcp0({{ lnet_iface_0 }},{{ lnet_iface_1 }})"
+# Automatically single-rail for hosts without ip_lnet1 (clients), dual-rail
+# for hosts that have ip_lnet1 defined (servers). No per-host override needed.
+lnet_networks: "tcp0({{ lnet_iface_0 }}{% if ip_lnet1 is defined %},{{ lnet_iface_1 }}{% endif %})"  # yamllint disable-line rule:line-length

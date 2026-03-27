@@ -297,14 +297,14 @@ resource "libvirt_domain" "client" {
     mode = "host-passthrough"
   }
 
+  # Clients run kmod-lustre-client on the stock kernel, which triggers an
+  # "Export already connecting" Multi-Rail crash when two NIDs attempt
+  # simultaneous connections.  Single lnet0 NIC enforces single-path LNET.
   network_interface {
     network_id = libvirt_network.lustre_mgmt.id
   }
   network_interface {
     network_id = libvirt_network.lustre_lnet0.id
-  }
-  network_interface {
-    network_id = libvirt_network.lustre_lnet1.id
   }
 
   disk {
