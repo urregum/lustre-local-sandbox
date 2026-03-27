@@ -54,11 +54,22 @@ dicts in `lnet_setup.yaml` into multi-line form, and wrap long strings in
 Runs ansible-lint, yamllint, and `black --check` on GitHub-hosted runners.
 
 ### Integration testing
-**Status:** Scaffolded — `tests/integration/ci_run.sh` + static KVM inventory.
-Runs L2 teardown → full provision unattended against local KVM VMs.
-`make integration` / `make integration-noclean` (skip teardown).
-Verify `ansible_host` IPs in `tests/integration/inventory/hosts.ini` match
-actual libvirt DHCP leases before first run (`virsh net-dhcp-leases default`).
+**Status:** Scaffolded but stale — requires several fixes before first run:
+- `tests/integration/inventory/hosts.ini` still has `ip_lnet1`/`mgs_lnet1_ip`
+  from before the single-rail simplification; subnet masks are `/16` (should
+  be `/24`); `ansible_user=curleym` is hardcoded; `mgs_lnet0_ip` is quoted
+  (will be treated as a string, not a value).
+- `ci_run.sh` references `teardown/teardown_l2.yaml` — path is wrong, playbook
+  lives at `ansible/teardown_l2.yaml`.
+- Management `ansible_host` IPs (`192.168.122.x`) are static guesses against
+  the libvirt default bridge; this environment uses `10.0.100.x` from Terraform.
+  Investigate whether the static inventory can be replaced or seeded from
+  `gen_inventory.py` output, or document the manual IP verification step more
+  clearly.
+
+**Intended fix:** Audit and update the static inventory and `ci_run.sh` path.
+Consider whether the static inventory approach is viable long-term or whether
+integration tests should run `gen_inventory.py` as part of setup.
 
 ---
 
@@ -77,21 +88,12 @@ at 1.0. Direct push to main is acceptable for now.
 
 ### ~~Inventory management~~ — resolved in scripts/gen_inventory.py
 
-### Provision gate — site.yaml wrapper
-**Status:** Partially addressed — `lustre_ansible_setup.yaml` runs the full
-sequence end-to-end (wait_for_hosts → lustre_rpm_setup → lnet_setup →
-server_stg_setup → client_setup). The pre-mount `lctl ping` gate in
-`client_setup.yaml` prevents mounting before MGS LNET is responsive.
-**Remaining gap:** No gate on server-side dual-rail lnet1 stability. After
-reboot, the lnet1 (192.168.101.x) network takes ~15-30 minutes to fully
-stabilize across all 7 VMs; transient recovery cascades occur during this
-window. Root cause not fully confirmed — likely a boot-ordering timing issue
-rather than a persistent hardware/config fault.
-**Intended fix:** Investigate and root-cause the post-boot lnet1 instability.
-Options include: adding a server-side stability gate (wait for all peer NIs to
-exit recovery before proceeding to client play), increasing post-reboot delay
-in `lustre_rpm_setup.yaml`, or reducing LNET peer timeout to shorten the
-recovery window.
+### ~~Provision gate~~ — resolved
+Single-rail LNET (lnet1 removed) eliminated the post-boot instability root
+cause. `lustre_ansible_setup.yaml` runs end-to-end with `lctl ping` retry
+gates in both `lnet_setup.yaml` (all nodes ping MGS) and `client_setup.yaml`
+(pre-mount MGS reachability check). No further gate work needed for
+single-rail topology.
 
 ### /etc/hosts population on KVM host
 **Status:** Deferred — manual workaround in place.
@@ -102,3 +104,37 @@ making `ssh ansible@mgs` etc. work without looking up IPs.
 ### ~~IOR benchmark — drop_caches and direct I/O notes~~ — resolved, see runbook Phase 3
 
 ### ~~Client pool scaling documentation~~ — resolved, see runbook "Scaling the Client Pool"
+
+### Terraform libvirt provider version
+**Status:** Pinned to `~> 0.7.0` — downgraded from 0.9.6 due to compatibility
+issues at the time of initial setup.
+**Intended fix:** Evaluate whether upgrading to a more current provider version
+is safe for this environment. Check the dmacvicar/libvirt changelog for
+breaking changes between 0.7.x and current before attempting an upgrade.
+
+### Runbook health checks — consider moving to playbook
+**Status:** Deferred — Phase 3 of the runbook lists manual `lctl dl`,
+`lctl get_param -n health_check`, `df -h`, and `lfs df` commands.
+`server_stg_setup.yaml` already runs `lctl dl` and `health_check` on servers.
+**Intended fix:** Evaluate adding client-side health checks to
+`client_setup.yaml` (mount verification, `lfs df`) so the full cluster health
+picture is covered by the playbook. Simplify the runbook Phase 3 to reference
+playbook output rather than duplicating commands.
+
+### Post-terraform VM readiness validation
+**Status:** Deferred — `wait_for_hosts.yaml` covers SSH availability and
+cloud-init completion, but does not validate the KVM environment itself.
+**Intended fix:** Consider a lightweight pre-flight check after `terraform apply`
+and before running Ansible: confirm expected VMs are running (`virsh list`),
+block devices are present on server VMs (`/dev/vdb`), and LNET network
+interfaces exist. Could live in `gen_inventory.py`, a separate script, or
+a dedicated preflight play.
+
+### L1 and L2 teardown — needs focused testing
+**Status:** Deferred — L3 (full destroy + rebuild) has been exercised
+extensively. L1 (graceful unmount) and L2 (block device wipe) have not been
+explicitly tested as standalone procedures.
+**Intended fix:** Run dedicated L1 and L2 test cycles: L1 followed by
+re-running setup plays to confirm clean remount; L2 followed by
+`server_stg_setup.yaml` to confirm reformat and remount. Verify idempotency
+of both teardown levels.
