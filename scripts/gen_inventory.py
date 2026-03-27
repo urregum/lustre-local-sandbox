@@ -89,8 +89,33 @@ clients
 """
 
 
+def scrub_known_hosts(ips):
+    """Remove stale known_hosts entries for all management IPs.
+
+    After terraform destroy + apply the VMs get new host keys.  Leaving
+    old entries causes SSH to refuse the connection with a host-key-changed
+    error, which breaks both manual SSH and tools that don't suppress
+    host-key checking.  ssh-keygen -R is idempotent: it silently does
+    nothing when the entry is absent.
+    """
+    for name, ip in ips.items():
+        result = subprocess.run(
+            ["ssh-keygen", "-R", ip],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(
+                f"WARNING: ssh-keygen -R {ip} ({name}) failed: {result.stderr}",
+                file=sys.stderr,
+            )
+        else:
+            print(f"Scrubbed known_hosts: {ip} ({name})")
+
+
 def main():
     ips = get_management_ips()
+    scrub_known_hosts(ips)
     inventory = render_inventory(ips)
     INVENTORY_PATH.write_text(inventory)
     print(f"Written: {INVENTORY_PATH}")
