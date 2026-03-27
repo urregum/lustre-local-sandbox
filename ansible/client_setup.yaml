@@ -39,6 +39,14 @@
         path: /mnt/lustre
         mode: '1777'
 
+    - name: Create per-user scratch directory for ansible user
+      ansible.builtin.file:
+        path: "/mnt/lustre/{{ ansible_user }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
     - name: Check if IOR is already installed
       ansible.builtin.stat:
         path: /usr/local/bin/ior
