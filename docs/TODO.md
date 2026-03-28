@@ -34,10 +34,7 @@ deprecated in ansible-core 2.23/2.24.
 uses `ansible.module_utils.common.text.converters` is available. No change to
 our playbooks required.
 
-### ansible-lint pre-commit hook
-**Status:** Unblocked — Ansible refactor complete, clean lint baseline established.
-**Intended fix:** Add `ansible-lint` stanza to `.pre-commit-config.yaml` and
-remove the deferred comment.
+### ~~ansible-lint pre-commit hook~~ — resolved, runs as local hook using venv install
 
 ### yamllint line-length exceptions
 **Status:** Deferred to 1.0 — exceptions were added as a quick fix during
