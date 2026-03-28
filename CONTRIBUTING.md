@@ -23,12 +23,12 @@ The most widely recommended types for open-source are:
 
 # Best Practices
 
-    1. Reference Issues/PRs: Always include the issue or pull request number in the body or footer (e.g., Closes #123).
-    2. Separate Subject and Body: Use a blank line between the title and the detailed description.
-    3. Capitalization & Punctuation: Capitalize the subject line but do not end it with a period.
-    4. Use Squash on Merge: When merging pull requests, prefer "squashing" many small commits into one clean, meaningful commit. Exceptions can be made to preserve information.
-    5. Sign Commits: signoff commits (with -s flag for local repo user). Given the demonstration nature of this repository, GPG signing is not required (but you do you).
-    6. Once released, typical length (<200 lines) and atomic scope standards for changes would be applied with PRs.
+    * Reference Issues/PRs: Always include the issue or pull request number in the body or footer (e.g., Closes #123).
+    * Separate Subject and Body: Use a blank line between the title and the detailed description.
+    * Capitalization & Punctuation: Capitalize the subject line but do not end it with a period.
+    * Use Squash on Merge: When merging pull requests, prefer "squashing" many small commits into one clean, meaningful commit. Exceptions can be made to preserve information.
+    * Sign Commits: sign off commits (with -s flag for local repo user). Given the demonstration nature of this repository, GPG signing is not required (but you do you).
+    * Once released, typical length (<200 lines) and atomic scope standards for changes would be applied with PRs.
 
 # Caveats to Best Practices
     * Given the small scope and timeline of the project, atomicity and PR requirements have been relaxed prior to 1.0 to allow for rapid readiness.
@@ -36,7 +36,7 @@ The most widely recommended types for open-source are:
 # Example of a Good Commit Message
     feat(auth): add password validation to signup form
 
-    Added regex check to ensure passwords are at least 8 characters
+    Add regex check to ensure passwords are at least 8 characters
     and contain a special character. This improves security based on
     security audit feedback.
 
