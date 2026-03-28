@@ -99,12 +99,7 @@ making `ssh ansible@mgs` etc. work without looking up IPs.
 
 ### ~~Client pool scaling documentation~~ — resolved, see runbook "Scaling the Client Pool"
 
-### Terraform libvirt provider version
-**Status:** Pinned to `~> 0.7.0` — downgraded from 0.9.6 due to compatibility
-issues at the time of initial setup.
-**Intended fix:** Evaluate whether upgrading to a more current provider version
-is safe for this environment. Check the dmacvicar/libvirt changelog for
-breaking changes between 0.7.x and current before attempting an upgrade.
+### ~~Terraform libvirt provider version~~ — resolved, upgraded to ~> 0.8.0 (v0.8.3)
 
 ### Runbook health checks — consider moving to playbook
 **Status:** Deferred — Phase 3 of the runbook lists manual `lctl dl`,
