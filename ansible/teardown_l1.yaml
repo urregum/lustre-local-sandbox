@@ -74,16 +74,6 @@
         name: lustre-modules
         state: stopped
 
-    - name: Check if lustre module is loaded
-      ansible.builtin.shell:
-        cmd: |
-          set -o pipefail
-          lsmod | grep -q "^lustre"
-        executable: /bin/bash
-      register: lustre_loaded
-      changed_when: false
-      failed_when: false
-
     - name: Deconfigure LNet stack
       # Must run before lustre_rmmod so the LNet config is released cleanly.
       ansible.builtin.command: lnetctl lnet unconfigure
@@ -96,6 +86,5 @@
       # modprobe -r lustre alone does not do.
       ansible.builtin.command: lustre_rmmod
       changed_when: true
-      when: lustre_loaded.rc == 0 or lnet_loaded.rc == 0
 
 ...
