@@ -84,48 +84,18 @@
       changed_when: false
       failed_when: false
 
-    - name: Unload lustre kernel module
-      community.general.modprobe:
-        name: lustre
-        state: absent
-      when: lustre_loaded.rc == 0
-
     - name: Deconfigure LNet stack
-      # Releases transport (ksocklnd) references before unloading lnet.
+      # Must run before lustre_rmmod so the LNet config is released cleanly.
       ansible.builtin.command: lnetctl lnet unconfigure
       changed_when: true
       failed_when: false
 
-    - name: Check if ksocklnd module is loaded
-      ansible.builtin.shell:
-        cmd: |
-          set -o pipefail
-          lsmod | grep -q "^ksocklnd"
-        executable: /bin/bash
-      register: ksocklnd_loaded
-      changed_when: false
-      failed_when: false
-
-    - name: Unload ksocklnd kernel module
-      community.general.modprobe:
-        name: ksocklnd
-        state: absent
-      when: ksocklnd_loaded.rc == 0
-
-    - name: Check if lnet module is loaded
-      ansible.builtin.shell:
-        cmd: |
-          set -o pipefail
-          lsmod | grep -q "^lnet"
-        executable: /bin/bash
-      register: lnet_loaded
-      changed_when: false
-      failed_when: false
-
-    - name: Unload lnet kernel module
-      community.general.modprobe:
-        name: lnet
-        state: absent
-      when: lnet_loaded.rc == 0
+    - name: Unload all Lustre and LNet kernel modules
+      # lustre_rmmod walks the full sub-module dependency tree in reverse load
+      # order (mgs/mdt/ost/obdclass/ptlrpc/mgc/lnet/ksocklnd/libcfs), which
+      # modprobe -r lustre alone does not do.
+      ansible.builtin.command: lustre_rmmod
+      changed_when: true
+      when: lustre_loaded.rc == 0 or lnet_loaded.rc == 0
 
 ...
