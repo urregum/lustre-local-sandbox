@@ -48,22 +48,14 @@ dicts in `lnet_setup.yaml` into multi-line form, and wrap long strings in
 ### ~~GitHub Actions — lint workflow~~ — resolved in 0.5.0
 
 ### Integration testing
-**Status:** Scaffolded but stale — requires several fixes before first run:
-- `tests/integration/inventory/hosts.ini` still has `ip_lnet1`/`mgs_lnet1_ip`
-  from before the single-rail simplification; subnet masks are `/16` (should
-  be `/24`); `ansible_user=curleym` is hardcoded; `mgs_lnet0_ip` is quoted
-  (will be treated as a string, not a value).
-- `ci_run.sh` references `teardown/teardown_l2.yaml` — path is wrong, playbook
-  lives at `ansible/teardown_l2.yaml`.
-- Management `ansible_host` IPs (`192.168.122.x`) are static guesses against
-  the libvirt default bridge; this environment uses `10.0.100.x` from Terraform.
-  Investigate whether the static inventory can be replaced or seeded from
-  `gen_inventory.py` output, or document the manual IP verification step more
-  clearly.
-
-**Intended fix:** Audit and update the static inventory and `ci_run.sh` path.
-Consider whether the static inventory approach is viable long-term or whether
-integration tests should run `gen_inventory.py` as part of setup.
+**Status:** Scaffolded for 1.0 — not yet run end-to-end.
+`ci_run.sh` replaced by `tests/integration/integration_test.py`, which wraps
+the full runbook flow (Terraform → gen_inventory.py → Ansible) with optional
+`--teardown-l1`, `--teardown-l2`, and `--clean-slate` flags. Static inventory
+updated to reflect single-rail topology and Terraform-default IPs; retained as
+a manual-use alternative to gen_inventory.py output.
+**Intended fix:** Run a full integration test cycle before 1.0 on the Ubuntu
+24.04 validation host to confirm the script and flow work on a fresh system.
 
 ---
 
