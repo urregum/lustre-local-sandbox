@@ -97,24 +97,20 @@ The default for playbooks is to fail on any error.
 
 ## Phase 3 — Validate
 
-Your host user ssh-key is made available for the 'ansible' user on all VMs.
-
-Verify cluster health from any server node:
+Cluster health validation runs automatically as the final step of
+`lustre_ansible_setup.yaml`. It can also be run standalone at any time:
 
 ```bash
-# All devices should show 'UP'
-lctl dl
-
-# Should return 'healthy'
-lctl get_param -n health_check
-
-# From client: verify filesystem is mounted and accessible
-df -h /mnt/lustre
-lfs df
+ansible-playbook -i hosts.ini cluster_health.yaml
 ```
 
-Run basic IOR and mdtest benchmarks from a client. The default Lustre mount has a
-/mnt/lustre/ansible subdirectory set up for testing:
+This checks: all Lustre devices UP on every server, kernel health on every
+server, client filesystem mounted, all 4 OSTs visible from the client, and
+a write/read smoke test to confirm the I/O path end-to-end.
+
+Your host user SSH key is available for the `ansible` user on all VMs for
+interactive inspection. Run optional IOR and mdtest benchmarks from a client.
+The `/mnt/lustre/ansible` subdirectory is set up for testing:
 
 ```bash
 # Write then read using direct I/O (bypasses kernel page cache for accurate results).

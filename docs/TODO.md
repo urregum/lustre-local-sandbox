@@ -101,14 +101,9 @@ making `ssh ansible@mgs` etc. work without looking up IPs.
 
 ### ~~Terraform libvirt provider version~~ — resolved, upgraded to ~> 0.8.0 (v0.8.3)
 
-### Runbook health checks — consider moving to playbook
-**Status:** Deferred — Phase 3 of the runbook lists manual `lctl dl`,
-`lctl get_param -n health_check`, `df -h`, and `lfs df` commands.
-`server_stg_setup.yaml` already runs `lctl dl` and `health_check` on servers.
-**Intended fix:** Evaluate adding client-side health checks to
-`client_setup.yaml` (mount verification, `lfs df`) so the full cluster health
-picture is covered by the playbook. Simplify the runbook Phase 3 to reference
-playbook output rather than duplicating commands.
+### ~~Runbook health checks — consider moving to playbook~~ — resolved in cluster_health.yaml
+Note: server checks, client mount, OST count, and write/read smoke test are
+all automated. IOR and mdtest intentionally left user-driven.
 
 ### ~~Post-terraform VM readiness validation~~ — resolved in scripts/preflight_check.sh
 Note: `preflight_check.sh pre` also validates host-side prerequisites (libvirt

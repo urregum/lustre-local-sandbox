@@ -1,0 +1,68 @@
+---
+# Validates cluster health after a full setup run or after teardown/remount.
+# Can be run standalone or as the final step in lustre_ansible_setup.yaml.
+#
+# Does NOT run IOR or mdtest — those are left to the user for interactive
+# benchmarking. See docs/runbook.md Phase 3 for benchmark commands.
+
+- name: Server health checks
+  hosts: servers
+  become: true
+  any_errors_fatal: true
+  tasks:
+    - name: Verify all Lustre devices are UP
+      ansible.builtin.command: lctl dl
+      register: lctl_output
+      changed_when: false
+      failed_when: >
+        lctl_output.stdout_lines | length > 0 and
+        lctl_output.stdout_lines | reject('search', ' UP ') | list | length > 0
+
+    - name: Check Lustre kernel health
+      ansible.builtin.command: lctl get_param -n health_check
+      register: health_result
+      changed_when: false
+      failed_when: "'healthy' not in health_result.stdout"
+
+- name: Client health checks
+  hosts: clients
+  become: true
+  any_errors_fatal: true
+  tasks:
+    - name: Verify Lustre filesystem is mounted
+      ansible.builtin.command: mountpoint -q /mnt/lustre
+      changed_when: false
+
+    - name: Verify all OSTs are visible from client
+      ansible.builtin.command: lfs df
+      register: lfs_output
+      changed_when: false
+      failed_when: >
+        lfs_output.stdout_lines |
+        select('search', 'OST') | list | length
+        != groups['object_servers'] | length
+
+    - name: Write smoke test file to Lustre filesystem
+      ansible.builtin.copy:
+        content: "lustre_smoke_ok\n"
+        dest: /mnt/lustre/{{ ansible_user }}/smoke_test
+        force: true
+        mode: '0644'
+
+    - name: Read smoke test file back from Lustre filesystem
+      ansible.builtin.slurp:
+        src: /mnt/lustre/{{ ansible_user }}/smoke_test
+      register: smoke_read
+
+    - name: Assert smoke test content matches written content
+      ansible.builtin.assert:
+        that:
+          - smoke_read.content | b64decode | trim == "lustre_smoke_ok"
+        fail_msg: "Smoke test failed: read content does not match written"
+
+    - name: Remove smoke test file
+      ansible.builtin.file:
+        path: /mnt/lustre/{{ ansible_user }}/smoke_test
+        state: absent
+
+...

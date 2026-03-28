@@ -14,4 +14,7 @@
 - name: Lustre client mount and tooling setup
   import_playbook: client_setup.yaml
 
+- name: Cluster health validation
+  import_playbook: cluster_health.yaml
+
 ...
