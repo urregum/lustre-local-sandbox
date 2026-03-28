@@ -31,7 +31,7 @@ fail() { echo "$FAIL $1"; errors=$((errors + 1)); }
 # Disk reservation (pool parent dir):
 #   Boot disks: 8 VMs × 20 GiB = 160 GiB
 #   Data disks: 7 servers × 5 GiB = 35 GiB
-#   Total:                         ~195 GiB (210 GiB checked, with headroom)
+#   Total:                         ~195 GiB (200 GiB checked: 195 + 5 GiB buffer)
 
 check_pre() {
     local pool_parent="${1:-/var/lib/libvirt}"
@@ -55,13 +55,14 @@ check_pre() {
     fi
 
     # Disk space in pool parent directory
-    local required_gb=210
+    # 195 GiB allocated (160 boot + 35 data) + 5 GiB buffer for qcow2 overhead
+    local required_gb=200
     local avail_gb
     avail_gb=$(df --output=avail -BG "$pool_parent" 2>/dev/null | tail -1 | tr -d 'G ')
     if [ "$avail_gb" -ge "$required_gb" ]; then
         pass "Disk space on ${pool_parent}: ${avail_gb} GiB available (need ${required_gb} GiB)"
     else
-        fail "Insufficient disk: ${avail_gb} GiB on ${pool_parent}, need ${required_gb} GiB"
+        fail "Insufficient disk: ${avail_gb} GiB on ${pool_parent}, need ${required_gb} GiB (195 GiB allocated + 5 GiB buffer)"
     fi
 
     # SSH public key exists
