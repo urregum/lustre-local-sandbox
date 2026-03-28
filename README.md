@@ -56,7 +56,9 @@ This means the _total reservations_ of default VMs are:
 * 22 GiB Memory = (5 * 2GiB) + (3 * 4GiB)
 
 If these reservations do not work for your KVM host, nodes may manually be reduced
-down as low as one per role. <TODO: very high level doc notes on what this would take>
+down as low as one per role. Specific steps are not documented for modifying server
+count but [Runbook Client Scaling](docs/runbook.md#scaling-the-client-pool) steps
+can be adapted per environment needs.
 
 ### Configuration Notes
 
