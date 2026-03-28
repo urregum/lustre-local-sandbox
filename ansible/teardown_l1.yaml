@@ -85,10 +85,13 @@
       failed_when: false
 
     - name: Deconfigure LNet stack
-      # Must run before lustre_rmmod so the LNet config is released cleanly.
+      # Best-effort: releases idle peers before lustre_rmmod. May return EBUSY
+      # if active peer connections remain after unmount — lustre_rmmod handles
+      # the full teardown regardless.
       ansible.builtin.command: lnetctl lnet unconfigure
       when: lnet_configured.stdout != ""
       changed_when: lnet_configured.stdout != ""
+      failed_when: false
 
     - name: Check if any Lustre or LNet modules are loaded
       ansible.builtin.shell:
