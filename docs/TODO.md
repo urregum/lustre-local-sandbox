@@ -110,14 +110,11 @@ making `ssh ansible@mgs` etc. work without looking up IPs.
 picture is covered by the playbook. Simplify the runbook Phase 3 to reference
 playbook output rather than duplicating commands.
 
-### Post-terraform VM readiness validation
-**Status:** Deferred — `wait_for_hosts.yaml` covers SSH availability and
-cloud-init completion, but does not validate the KVM environment itself.
-**Intended fix:** Consider a lightweight pre-flight check after `terraform apply`
-and before running Ansible: confirm expected VMs are running (`virsh list`),
-block devices are present on server VMs (`/dev/vdb`), and LNET network
-interfaces exist. Could live in `gen_inventory.py`, a separate script, or
-a dedicated preflight play.
+### ~~Post-terraform VM readiness validation~~ — resolved in scripts/preflight_check.sh
+Note: `preflight_check.sh pre` also validates host-side prerequisites (libvirt
+reachability, available memory vs cluster reservation, disk space, SSH key).
+LNET interface validation deferred — covered at runtime by lnet_setup.yaml's
+lctl ping retry gate.
 
 ### Cross-platform host validation — required before 1.0
 **Status:** Deferred to pre-1.0 — currently only validated on Linux Mint 22
