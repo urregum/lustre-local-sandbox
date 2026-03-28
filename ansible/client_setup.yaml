@@ -64,6 +64,7 @@
         cmd: ./bootstrap
         chdir: /usr/local/src/ior
       when: not ior_binary.stat.exists
+      changed_when: true
 
     - name: Configure IOR with OpenMPI compiler
       ansible.builtin.command:
@@ -72,18 +73,21 @@
       environment:
         CC: /usr/lib64/openmpi/bin/mpicc
       when: not ior_binary.stat.exists
+      changed_when: true
 
     - name: Build IOR
       ansible.builtin.command:
         cmd: make
         chdir: /usr/local/src/ior
       when: not ior_binary.stat.exists
+      changed_when: true
 
     - name: Install IOR
       ansible.builtin.command:
         cmd: make install
         chdir: /usr/local/src/ior
       when: not ior_binary.stat.exists
+      changed_when: true
 
     - name: Add OpenMPI bin directory to system PATH
       ansible.builtin.copy:

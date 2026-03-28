@@ -27,13 +27,18 @@
           ip: "{{ ip_lnet0 }}"
       register: nm_output
 
-    - name: Bring up connections if changed
+    - name: Bring up connections if changed  # noqa: no-handler
       ansible.builtin.command: "nmcli connection up {{ item.item.conn }}"
       loop: "{{ nm_output.results }}"
       when: item.changed
+      changed_when: true
 
     - name: Check if lnet is loaded
-      ansible.builtin.shell: lsmod | grep -q "^lnet"
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          lsmod | grep -q "^lnet"
+        executable: /bin/bash
       register: lnet_loaded
       failed_when: false
       changed_when: false
@@ -46,7 +51,11 @@
 
     - name: Check if LNet is already configured
       # 'lnetctl net show' returns only the loopback (lo) if unconfigured
-      ansible.builtin.shell: lctl list_nids | grep -v "0@lo"
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          lctl list_nids | grep -v "0@lo"
+        executable: /bin/bash
       register: lnet_check
       failed_when: false
       changed_when: false
@@ -54,6 +63,7 @@
     - name: Initialize LNet stack
       ansible.builtin.command: lnetctl lnet configure --all
       when: lnet_check.stdout == ""
+      changed_when: lnet_check.stdout == ""
 
     - name: Check current LNet interfaces
       ansible.builtin.command: lnetctl net show
@@ -65,6 +75,7 @@
       loop:
         - "{{ lnet_iface_0 }}"
       when: item not in lnet_show.stdout
+      changed_when: item not in lnet_show.stdout
 
     - name: Ensure Lustre network interfaces persist on boot
       community.general.nmcli:
@@ -79,7 +90,7 @@
         owner: root
         group: root
         mode: '0644'
-      notify: reload systemd
+      notify: Reload systemd
 
     - name: Ensure lustre-modules service is enabled
       ansible.builtin.systemd:
@@ -96,21 +107,8 @@
       changed_when: false
 
   handlers:
-    - name: reload systemd
+    - name: Reload systemd
       ansible.builtin.systemd:
         daemon_reload: true
 
-#    - name: Verify connection (Ping)
-#      ansible.builtin.ping:
-
-#    - name: Get OS version
-#      ansible.builtin.debug:
-#        msg: "This host is running {{ ansible_distribution }}\
-#             {{ ansible_distribution_version }}"
-
-#    - name: Update all packages (Optional)
-#      ansible.builtin.dnf:
-#        name: "*"
-#        state: latest
-#        update_cache: true
 ...

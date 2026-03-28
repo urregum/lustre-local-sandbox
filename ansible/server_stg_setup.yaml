@@ -6,7 +6,7 @@
   become: true
   any_errors_fatal: true
   tasks:
-    - name: Check if {{ lustre_data_device }} has a Lustre filesystem
+    - name: Check for existing Lustre filesystem on {{ lustre_data_device }}
       ansible.builtin.command: tunefs.lustre --dryrun {{ lustre_data_device }}
       register: tunefs_result
       changed_when: false
@@ -19,6 +19,7 @@
         --mgsnode={{ ip_lnet0.split('/')[0] ~ '@tcp' }}
         {{ lustre_data_device }}
       when: tunefs_result.rc != 0
+      changed_when: tunefs_result.rc != 0
 
     - name: Ensure Lustre mgmt mount point exists
       ansible.builtin.file:
@@ -49,7 +50,7 @@
   become: true
   any_errors_fatal: true
   tasks:
-    - name: Check if {{ lustre_data_device }} has a Lustre filesystem
+    - name: Check for existing Lustre filesystem on {{ lustre_data_device }}
       ansible.builtin.command: tunefs.lustre --dryrun {{ lustre_data_device }}
       register: tunefs_result
       changed_when: false
@@ -63,6 +64,7 @@
         --index={{ mdt_index }}
         {{ lustre_data_device }}
       when: tunefs_result.rc != 0
+      changed_when: tunefs_result.rc != 0
 
     - name: Ensure Lustre metadata mount point exists
       ansible.builtin.file:
@@ -92,7 +94,7 @@
   become: true
   any_errors_fatal: true
   tasks:
-    - name: Check if {{ lustre_data_device }} has a Lustre filesystem
+    - name: Check for existing Lustre filesystem on {{ lustre_data_device }}
       ansible.builtin.command: tunefs.lustre --dryrun {{ lustre_data_device }}
       register: tunefs_result
       changed_when: false
@@ -106,6 +108,7 @@
         --index={{ ost_index }}
         {{ lustre_data_device }}
       when: tunefs_result.rc != 0
+      changed_when: tunefs_result.rc != 0
 
     - name: Ensure Lustre data mount point exists
       ansible.builtin.file:

@@ -32,4 +32,11 @@ repos:
       - id: gitlint
         stages: [commit-msg]
 
-# Deferred: ansible-lint to be added after Ansible plays are refactored
+  - repo: local
+    hooks:
+      - id: ansible-lint
+        name: ansible-lint
+        entry: ansible-lint
+        language: system
+        pass_filenames: false
+        always_run: true

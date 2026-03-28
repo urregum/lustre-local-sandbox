@@ -18,6 +18,7 @@
     - name: Unmount Lustre client filesystem
       ansible.builtin.command: umount /mnt/lustre
       when: mount_check.rc == 0
+      changed_when: mount_check.rc == 0
 
 - name: Unmount Lustre object storage
   hosts: object_servers
@@ -32,6 +33,7 @@
     - name: Unmount OST filesystem
       ansible.builtin.command: "umount /mnt/{{ mntpath }}"
       when: mount_check.rc == 0
+      changed_when: mount_check.rc == 0
 
 - name: Unmount Lustre metadata storage
   hosts: metadata_servers
@@ -46,6 +48,7 @@
     - name: Unmount MDT filesystem
       ansible.builtin.command: "umount /mnt/{{ mntpath }}"
       when: mount_check.rc == 0
+      changed_when: mount_check.rc == 0
 
 - name: Unmount Lustre management storage
   hosts: mgmt_servers
@@ -60,6 +63,7 @@
     - name: Unmount MGS filesystem
       ansible.builtin.command: "umount /mnt/{{ mntpath }}"
       when: mount_check.rc == 0
+      changed_when: mount_check.rc == 0
 
 - name: Stop lustre-modules service and unload kernel modules
   hosts: lustre_cluster
@@ -71,7 +75,11 @@
         state: stopped
 
     - name: Check if lustre module is loaded
-      ansible.builtin.shell: lsmod | grep -q "^lustre"
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          lsmod | grep -q "^lustre"
+        executable: /bin/bash
       register: lustre_loaded
       changed_when: false
       failed_when: false
@@ -83,7 +91,11 @@
       when: lustre_loaded.rc == 0
 
     - name: Check if lnet module is loaded
-      ansible.builtin.shell: lsmod | grep -q "^lnet"
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          lsmod | grep -q "^lnet"
+        executable: /bin/bash
       register: lnet_loaded
       changed_when: false
       failed_when: false

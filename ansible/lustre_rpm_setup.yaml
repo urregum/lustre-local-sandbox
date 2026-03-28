@@ -69,6 +69,7 @@
     - name: Set Lustre kernel as default boot entry
       ansible.builtin.command: "grubby --set-default /boot/vmlinuz-{{ lustre_kernel_version }}"  # yamllint disable-line rule:line-length
       when: "'lustre' not in grubby_default.stdout"
+      changed_when: "'lustre' not in grubby_default.stdout"
 
     - name: Check running kernel
       ansible.builtin.command: uname -r
