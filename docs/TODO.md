@@ -45,10 +45,7 @@ scalars (`>-`) for long URLs in `lustre_rpm_setup.yaml`, split long inline
 dicts in `lnet_setup.yaml` into multi-line form, and wrap long strings in
 `client_setup.yaml`. Remove all `yamllint disable-line` comments once done.
 
-### GitHub Actions — lint workflow
-**Status:** Unblocked — no runner or cluster required.
-**Intended fix:** Add `.github/workflows/lint.yml` triggered on push to main.
-Runs ansible-lint, yamllint, and `black --check` on GitHub-hosted runners.
+### ~~GitHub Actions — lint workflow~~ — resolved in 0.5.0
 
 ### Integration testing
 **Status:** Scaffolded but stale — requires several fixes before first run:
