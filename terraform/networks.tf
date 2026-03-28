@@ -3,7 +3,9 @@
 resource "libvirt_pool" "lustre_demo" {
   name = "lustre-demo"
   type = "dir"
-  path = var.libvirt_pool_path
+  target {
+    path = var.libvirt_pool_path
+  }
 }
 
 # Management network — NAT mode.
