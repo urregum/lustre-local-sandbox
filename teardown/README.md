@@ -14,7 +14,7 @@ Re-running the Ansible setup plays will bring the cluster back up.
 **What it does:**
 - Unmounts all Lustre filesystems in safe order: clients → OSS → MDS → MGS
 - Stops the `lustre-modules` systemd service on all nodes
-- Unloads `lustre` and `lnet` kernel modules
+- Deconfigures the LNet stack and unloads all Lustre and LNet kernel modules via `lustre_rmmod`
 
 ```bash
 cd ansible/

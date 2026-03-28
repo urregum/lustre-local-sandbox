@@ -28,10 +28,13 @@ The most widely recommended types for open-source are:
     * Capitalization & Punctuation: Capitalize the subject line but do not end it with a period.
     * Use Squash on Merge: When merging pull requests, prefer "squashing" many small commits into one clean, meaningful commit. Exceptions can be made to preserve information.
     * Sign Commits: sign off commits (with -s flag for local repo user). Given the demonstration nature of this repository, GPG signing is not required (but you do you).
-    * Once released, typical length (<200 lines) and atomic scope standards for changes would be applied with PRs.
+    * Changes should be kept to fewer than 200 lines and represent an atomic scope.
 
-# Caveats to Best Practices
-    * Given the small scope and timeline of the project, atomicity and PR requirements have been relaxed prior to 1.0 to allow for rapid readiness.
+# Development Workflow
+
+Changes should be made on a feature branch and submitted as a pull request
+against `main`. Direct commits to `main` are not accepted — branch protection
+is enabled. PRs require at least one approval before merging.
 
 # Example of a Good Commit Message
     feat(auth): add password validation to signup form
@@ -45,3 +48,10 @@ The most widely recommended types for open-source are:
 # Automation Tools
     * conventional-pre-commit: Enforces Conventional Commits subject format at commit time.
     * gitlint: Enforces Signed-off-by in the commit body at commit time.
+    * ansible-lint: Enforces Ansible best practices on playbook changes at commit time.
+
+# Integration Testing
+
+An integration test script is available for validating the full
+provision/teardown cycle against a local KVM environment. See
+[tests/integration/README.md](tests/integration/README.md).

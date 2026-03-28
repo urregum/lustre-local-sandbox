@@ -52,7 +52,7 @@ flowchart LR
 
 This means the _total reservations_ of default VMs are:
 * 16 VCPUs = (8 * 2 VCPUs)
-* 195 GiB Disk = (8 * 20GiB) + (7 * 5GiB)
+* 200 GiB Disk = (8 * 20GiB) + (7 * 5GiB) + 5GiB additional reserved space
 * 22 GiB Memory = (5 * 2GiB) + (3 * 4GiB)
 
 If these reservations do not work for your KVM host, nodes may manually be reduced
@@ -73,11 +73,41 @@ The following must be installed on the KVM host before starting:
 
 | Tool | Minimum version | Notes |
 |------|----------------|-------|
-| KVM / libvirt | — | `libvirtd` must be running |
+| KVM / libvirt | — | `libvirtd` must be running; user must be in the `libvirt` group |
 | Terraform | >= 1.6 | [install guide](https://developer.hashicorp.com/terraform/install) |
-| Python | >= 3.9 | System Python on Rocky 9.4 |
+| Python | >= 3.9 | |
 | git | — | |
 | SSH keypair | ed25519 | `~/.ssh/id_ed25519.pub` injected into VMs by Terraform; override path in `terraform.tfvars` if needed |
+
+### Distribution notes
+
+**Ubuntu / Debian:** The following additional steps are required before setup.
+
+Install packages not present by default:
+
+```bash
+sudo apt install python3-venv genisoimage
+```
+
+Ensure your user is in the `libvirt` group and the session has picked it up:
+
+```bash
+sudo usermod -aG libvirt $USER
+# Log out and back in, or: newgrp libvirt
+```
+
+The default AppArmor profile for `libvirt-qemu` does not cover the custom pool
+path used by this project. Grant access before running `terraform apply`:
+
+```bash
+echo '/var/lib/libvirt/lustre-demo/** rwk,' | \
+  sudo tee /etc/apparmor.d/local/abstractions/libvirt-qemu
+sudo apparmor_parser -r /etc/apparmor.d/abstractions/libvirt-qemu
+```
+
+**RHEL / Fedora:** Not yet validated. Expected to work with minor adjustments
+to package names and SELinux configuration. Treat as unsupported until a
+validation run is completed.
 
 ## Setup
 
@@ -122,10 +152,11 @@ Install pre-commit hooks after cloning:
 pre-commit install
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for commit standards, including sign-off requirements.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for commit standards, branch workflow,
+and sign-off requirements.
 
-Python scripting is basic enough that code linting is not in place, but would be
-added if it expands in scope.
+For validating changes to the provisioning and Ansible plays, an integration
+test script is available. See [tests/integration/README.md](tests/integration/README.md).
 
 ---
 
@@ -154,9 +185,14 @@ sandbox on and automate from there.
 
 ## Testing
 
-Currently this environment has only been tested with a Linux Mint 22 VM host.
-This means it may be fragile without a wider set of host OS integration testing.
-I would expect the VM provisioning to be the weakest link.
+Validated KVM host environments:
+
+- **Linux Mint 22** — primary development host
+- **Ubuntu 24.04 LTS** — validated at 1.0; requires distribution notes above
+
+**RHEL / Fedora / CentOS:** Not yet tested. The VM provisioning layer
+(libvirt/QEMU version differences, SELinux configuration) is the most likely
+source of fragility on non-Debian hosts.
 
 ## License
 
