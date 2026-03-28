@@ -35,7 +35,9 @@
       ansible.builtin.yum_repository:
         name: lustre-server
         description: "Lustre {{ lustre_version }} Server (Whamcloud)"
-        baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el9.4/server/"  # yamllint disable-line rule:line-length
+        baseurl: >-
+          https://downloads.whamcloud.com/public/lustre/lustre-{{
+          lustre_version }}/el9.4/server/
         enabled: true
         gpgcheck: false
         exclude: "*debuginfo*"
@@ -67,7 +69,8 @@
       changed_when: false
 
     - name: Set Lustre kernel as default boot entry
-      ansible.builtin.command: "grubby --set-default /boot/vmlinuz-{{ lustre_kernel_version }}"  # yamllint disable-line rule:line-length
+      ansible.builtin.command: >-
+        grubby --set-default /boot/vmlinuz-{{ lustre_kernel_version }}
       when: "'lustre' not in grubby_default.stdout"
       changed_when: "'lustre' not in grubby_default.stdout"
 
@@ -93,7 +96,9 @@
       ansible.builtin.yum_repository:
         name: lustre-client
         description: "Lustre {{ lustre_version }} Client (Whamcloud)"
-        baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el9.4/client/"  # yamllint disable-line rule:line-length
+        baseurl: >-
+          https://downloads.whamcloud.com/public/lustre/lustre-{{
+          lustre_version }}/el9.4/client/
         enabled: true
         gpgcheck: false
         exclude: "*debuginfo*"
