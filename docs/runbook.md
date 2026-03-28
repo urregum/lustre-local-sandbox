@@ -47,6 +47,9 @@ Initialize and apply the Terraform configuration. This will:
 - Provision 8 VMs (1 client, 1 MGS, 2 MDS, 4 OSS) with cloud-init configuration
 
 ```bash
+# Confirm host is ready before provisioning
+./scripts/preflight_check.sh pre
+
 cd terraform/
 terraform init
 terraform apply
@@ -54,10 +57,13 @@ terraform apply
 
 ## Phase 1.5 — Glue Script (Python)
 
-After `apply` completes, generate the Ansible inventory from Terraform output:
+After `apply` completes, confirm all VMs and disks are present, then generate
+the Ansible inventory:
 
 ```bash
-cd ..
+# Confirm all 8 VMs are running and data disks attached
+./scripts/preflight_check.sh post
+
 python3 scripts/gen_inventory.py
 ```
 
