@@ -7,12 +7,15 @@ single run. Pass/fail is derived from subprocess exit codes — any failure
 stops the run immediately and reports the failing phase.
 
 Assumes VMs provisioned with default terraform/variables.tf values.
-Destroys any existing cluster before provisioning.
+Destroys any existing cluster before provisioning. Requires --yes to proceed.
 
 Usage:
-    python3 tests/integration/integration_test.py [options]
+    python3 tests/integration/integration_test.py --yes [options]
 
 Options:
+    --yes             Required. Confirms that the existing cluster will be
+                      destroyed before provisioning. Without this flag the
+                      script prints a dry-run summary and exits.
     --clean-slate     Remove the base OS image from the libvirt pool after
                       terraform destroy, forcing a fresh image download.
     --teardown-l1     After provision, run an L1 teardown and remount cycle.
@@ -39,6 +42,7 @@ SCRIPTS_DIR = REPO_ROOT / "scripts"
 
 
 def phase(name):
+    """Print a phase header to stdout."""
     print(f"\n{'=' * 60}")
     print(f"=== {name}")
     print(f"{'=' * 60}\n")
@@ -46,15 +50,21 @@ def phase(name):
 
 def run(cmd, cwd=None):
     """Run a command, streaming output to the terminal. Exit on failure."""
-    result = subprocess.run([str(c) for c in cmd], cwd=cwd)
+    try:
+        result = subprocess.run([str(c) for c in cmd], cwd=cwd)
+    except FileNotFoundError:
+        print(f"\n[FAIL] Command not found: {cmd[0]}")
+        sys.exit(1)
     if result.returncode != 0:
         print(
-            f"\n[FAIL] Command exited {result.returncode}: {' '.join(str(c) for c in cmd)}"
+            f"\n[FAIL] Command exited {result.returncode}: "
+            f"{' '.join(str(c) for c in cmd)}"
         )
         sys.exit(result.returncode)
 
 
 def check_venv():
+    """Exit with a clear message if the repo .venv is not present."""
     if not VENV_BIN.is_dir():
         print(
             "ERROR: .venv not found at repo root.\n"
@@ -68,10 +78,12 @@ def check_venv():
 
 
 def ansible_playbook(playbook):
+    """Run an Ansible playbook from the ansible/ directory with the generated inventory."""
     run([VENV_BIN / "ansible-playbook", "-i", "hosts.ini", playbook], cwd=ANSIBLE_DIR)
 
 
 def provision():
+    """Run the full provision flow: Terraform → preflight → inventory → Ansible."""
     phase("Phase 1: Provision infrastructure (Terraform)")
     run(["terraform", "init"], cwd=TERRAFORM_DIR)
     run(["terraform", "apply", "-auto-approve"], cwd=TERRAFORM_DIR)
@@ -84,10 +96,37 @@ def provision():
     ansible_playbook("lustre_ansible_setup.yaml")
 
 
+def print_dry_run(args):
+    """Print what the script would do without --yes and exit cleanly."""
+    teardown_label = "l1" if args.teardown_l1 else "l2" if args.teardown_l2 else "none"
+    print("Dry run — pass --yes to execute.\n")
+    print(f"  repo:        {REPO_ROOT}")
+    print(f"  clean-slate: {args.clean_slate}")
+    print(f"  teardown:    {teardown_label}")
+    print()
+    print("Actions that would run:")
+    print("  Phase 0: terraform destroy -auto-approve")
+    if args.clean_slate:
+        print("           virsh vol-delete rocky-9-base.qcow2 (clean-slate)")
+    print("  Phase 1: terraform init + apply")
+    print("  Phase 1.5: scripts/gen_inventory.py")
+    print("  Phase 2: ansible-playbook lustre_ansible_setup.yaml")
+    if args.teardown_l1:
+        print("  Phase 3: teardown_l1.yaml + re-provision (L1 cycle)")
+    if args.teardown_l2:
+        print("  Phase 3: teardown_l2.yaml + re-provision (L2 cycle)")
+
+
 def main():
+    """Parse arguments, guard against accidental destruction, and run the test."""
     parser = argparse.ArgumentParser(
         description="Integration test for lustre-local-sandbox.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Required. Confirms destruction of any existing cluster.",
     )
     teardown_group = parser.add_mutually_exclusive_group()
     teardown_group.add_argument(
@@ -108,6 +147,10 @@ def main():
     args = parser.parse_args()
 
     check_venv()
+
+    if not args.yes:
+        print_dry_run(args)
+        sys.exit(0)
 
     start = datetime.now()
     teardown_label = "l1" if args.teardown_l1 else "l2" if args.teardown_l2 else "none"
