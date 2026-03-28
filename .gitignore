@@ -9,9 +9,14 @@ venv/
 __pycache__/
 
 # Terraform
+# tfstate files are local-only; remote state is the mature alternative.
+# Backup files (including timestamped variants from interrupted runs) are
+# safe to delete manually but are intentionally left on disk as a last-resort
+# recovery option. Do not commit any of these.
 .terraform/
 *.tfstate
 *.tfstate.backup
+*.tfstate.*.backup
 *.tfvars
 
 # Editor
