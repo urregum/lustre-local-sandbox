@@ -36,7 +36,7 @@ jobs:
         run: ansible-lint
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
 
       - name: terraform fmt --check
         run: terraform fmt -check terraform/
