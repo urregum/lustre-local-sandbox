@@ -32,9 +32,25 @@ The most widely recommended types for open-source are:
 
 # Development Workflow
 
-Changes should be made on a feature branch and submitted as a pull request
+All changes must be made on a feature branch and submitted as a pull request
 against `main`. Direct commits to `main` are not accepted — branch protection
-is enabled. PRs require at least one approval before merging.
+is enabled. PRs require at least one approval and a passing `lint` check before
+merging.
+
+**Branch naming:** use the Conventional Commits type as a prefix, e.g.
+`feat/short-description`, `fix/short-description`, `docs/short-description`.
+
+**PR lifecycle:**
+1. Create a feature branch from `main`
+2. Commit changes following the commit standards above
+3. Open a PR against `main` — the `lint` workflow runs automatically
+4. Obtain at least one approval
+5. Squash-merge; the squash commit subject must follow Conventional Commits format
+6. Delete the feature branch after merge
+
+**Version bumps:** increment the VERSION file as part of the squash commit when
+the change warrants it. Use `major.minor.patch` — patch for fixes and small
+docs changes, minor for new features, major for significant capability milestones.
 
 # Example of a Good Commit Message
     feat(auth): add password validation to signup form

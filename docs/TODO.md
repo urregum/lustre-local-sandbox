@@ -36,35 +36,24 @@ our playbooks required.
 
 ### ~~ansible-lint pre-commit hook~~ — resolved, runs as local hook using venv install
 
-### yamllint line-length exceptions
-**Status:** Deferred to 1.0 — exceptions were added as a quick fix during
-development. Using `# yamllint disable-line rule:line-length` is an anti-pattern
-that suppresses the signal rather than fixing it.
-**Intended fix:** Restructure the offending lines properly — use YAML block
-scalars (`>-`) for long URLs in `lustre_rpm_setup.yaml`, split long inline
-dicts in `lnet_setup.yaml` into multi-line form, and wrap long strings in
-`client_setup.yaml`. Remove all `yamllint disable-line` comments once done.
+### ~~yamllint line-length exceptions~~ — resolved in 5f9ff4a
+All `# yamllint disable-line rule:line-length` comments replaced with `>-`
+block scalars in `lustre_rpm_setup.yaml`. No remaining suppressions.
 
 ### ~~GitHub Actions — lint workflow~~ — resolved in 0.5.0
 
-### Integration testing
-**Status:** Scaffolded for 1.0 — not yet run end-to-end.
-`ci_run.sh` replaced by `tests/integration/integration_test.py`, which wraps
-the full runbook flow (Terraform → gen_inventory.py → Ansible) with optional
-`--teardown-l1`, `--teardown-l2`, and `--clean-slate` flags. Static inventory
-updated to reflect single-rail topology and Terraform-default IPs; retained as
-a manual-use alternative to gen_inventory.py output.
-**Intended fix:** Run a full integration test cycle before 1.0 on the Ubuntu
-24.04 validation host to confirm the script and flow work on a fresh system.
+### ~~Integration testing~~ — validated on Ubuntu 24.04
+`integration_test.py` end-to-end: `--teardown-l2` cycle (full provision →
+teardown → reformat → remount → cluster_health) passed on Ubuntu 24.04 LTS.
+`--teardown-l1` cycle also validated on Linux Mint 22.
 
 ---
 
 ## Repository workflow
 
-### Branching and PR workflow
-**Status:** Deferred to 1.0.
-**Intended fix:** Enable main branch protection and require PRs for all merges
-at 1.0. Direct push to main is acceptable for now.
+### ~~Branching and PR workflow~~ — resolved at 1.0
+Branch protection enabled on `main`; PRs required for all merges going forward.
+Direct-push access removed.
 
 ---
 
@@ -103,17 +92,11 @@ reachability, available memory vs cluster reservation, disk space, SSH key).
 LNET interface validation deferred — covered at runtime by lnet_setup.yaml's
 lctl ping retry gate.
 
-### Cross-platform host validation — required before 1.0
-**Status:** Deferred to pre-1.0 — currently only validated on Linux Mint 22
-(noted in README.md). KVM/libvirt behavior, Python toolchain availability,
-Terraform provider compatibility, and nmcli behavior may differ across host
-distros and versions.
-**Intended fix:** Validate a full L3 rebuild on at least one additional host
-OS (e.g., Ubuntu 24.04 LTS or Fedora current) before cutting 1.0. Document
-any host-side prerequisites or workarounds surfaced during the process.
-Areas most likely to be fragile: libvirt/QEMU version differences affecting
-Terraform provider behavior, Python version availability for the venv, and
-package names in host prerequisites.
+### ~~Cross-platform host validation~~ — validated on Ubuntu 24.04
+Full L3 rebuild validated on Ubuntu 24.04 LTS. Prerequisites surfaced and
+documented in README.md: `python3-venv`, `genisoimage`, libvirt group
+membership, and AppArmor override for the custom pool path. RHEL/Fedora
+remains untested and unsupported.
 
 ### ~~L1 and L2 teardown — needs focused testing~~ — both validated
 L1: teardown, remount via lustre_ansible_setup.yaml, cluster_health, and IOR
