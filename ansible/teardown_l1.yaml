@@ -74,10 +74,30 @@
         name: lustre-modules
         state: stopped
 
+    - name: Check if LNet has configured interfaces
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          lctl list_nids | grep -v "0@lo"
+        executable: /bin/bash
+      register: lnet_configured
+      changed_when: false
+      failed_when: false
+
     - name: Deconfigure LNet stack
       # Must run before lustre_rmmod so the LNet config is released cleanly.
       ansible.builtin.command: lnetctl lnet unconfigure
-      changed_when: true
+      when: lnet_configured.stdout != ""
+      changed_when: lnet_configured.stdout != ""
+
+    - name: Check if any Lustre or LNet modules are loaded
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          lsmod | grep -qE "^(lustre|lnet|libcfs)"
+        executable: /bin/bash
+      register: modules_loaded
+      changed_when: false
       failed_when: false
 
     - name: Unload all Lustre and LNet kernel modules
@@ -85,6 +105,7 @@
       # order (mgs/mdt/ost/obdclass/ptlrpc/mgc/lnet/ksocklnd/libcfs), which
       # modprobe -r lustre alone does not do.
       ansible.builtin.command: lustre_rmmod
-      changed_when: true
+      when: modules_loaded.rc == 0
+      changed_when: modules_loaded.rc == 0
 
 ...
