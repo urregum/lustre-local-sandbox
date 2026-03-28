@@ -123,12 +123,9 @@ Areas most likely to be fragile: libvirt/QEMU version differences affecting
 Terraform provider behavior, Python version availability for the venv, and
 package names in host prerequisites.
 
-### L1 and L2 teardown — L1 validated, L2 pending
-**Status:** L1 validated — teardown, remount, cluster_health, and IOR all
-passed. Required fixes: `lnetctl lnet unconfigure` + `lustre_rmmod` to replace
-manual modprobe (sub-modules mgs/obdclass/ptlrpc/mgc held lnet references).
-Idempotency confirmed on re-run.
-L2 (block device wipe followed by `server_stg_setup.yaml` reformat) not yet
-tested as a standalone procedure.
-**Intended fix:** Run a dedicated L2 cycle: teardown_l2.yaml followed by
-`server_stg_setup.yaml` to confirm reformat and remount, then cluster_health.
+### ~~L1 and L2 teardown — needs focused testing~~ — both validated
+L1: teardown, remount via lustre_ansible_setup.yaml, cluster_health, and IOR
+all passed. Required fixes: `lnetctl lnet unconfigure` (best-effort, EBUSY
+tolerated) + `lustre_rmmod` replacing manual modprobe.
+L2: teardown_l2.yaml + full lustre_ansible_setup.yaml reformat and remount
+passed. PLAY RECAP showed expected changed counts across all 8 nodes.
