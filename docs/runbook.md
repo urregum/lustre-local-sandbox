@@ -55,7 +55,7 @@ terraform init
 terraform apply
 ```
 
-## Phase 1.5 — Glue Script (Python)
+## Phase 1.5 — Glue Scripting
 
 After `apply` completes, confirm all VMs and disks are present, then generate
 the Ansible inventory:
